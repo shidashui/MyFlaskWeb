@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}" type="text/css">
 </head>
 <body>
-    <main class="cotainer">
+    <main class="container">
         <header>
             <h1 class="text-center display-4">
                 <a href="{{ url_for('index')}}" class="text-success"><strong>留言板</strong></a>
@@ -25,7 +25,10 @@
         {% block content %}{% endblock %}
         <footer class="text-center">
             {% block footer %}
-            ...
+            <small> &copy; 2019 <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> /
+                <a href="https://github.com/greyli/sayhello" title="Fork me on GitHub">GitHub</a> /
+                <a href="http://helloflask.com" title="A HelloFlask project">HelloFlask</a>
+            </small>
             <p><a id="bottom" href="#" title="Go Top">&uarr;</a> </p>
             {% endblock %}
         </footer>
@@ -34,5 +37,7 @@
     <script type="text/javascript" src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
+    {{ moment.locale(auto_detect=True) }}
 </body>
 </html>
