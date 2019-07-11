@@ -8,6 +8,7 @@ from flask_login import current_user
 from flask_sqlalchemy import get_debug_queries
 from flask_wtf.csrf import CSRFError
 
+from blog.models import Category
 from .extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
 from .models import Admin
 from .settings import config
@@ -52,7 +53,11 @@ def register_shell_context(app):
         return dict(db=db)
 
 def register_template_context(app):
-    pass
+    @app.context_processor
+    def make_template_context():
+        admin = Admin.query.first()
+        categories = Category.query.order_by(Category.name).all()
+        return dict(admin=admin, categories=categories)
 
 def register_errors(app):
     @app.errorhandler(400)
