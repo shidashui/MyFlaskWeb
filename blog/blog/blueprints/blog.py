@@ -63,6 +63,11 @@ def show_post(post_id):
             author=author,email=email,site=site,body=body,
             from_admin=from_admin,post=post,reviewed=reviewed
         )
+        replied_id = request.args.get('reply')
+        if replied_id:
+            replied_comment = Comment.query.get_or_404(replied_id)
+            comment.replied = replied_comment
+            # send_new_comment_email(replied_comment)
         db.session.add(comment)
         db.session.commit()
         if current_user.is_authenticated:
