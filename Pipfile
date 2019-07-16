@@ -19,6 +19,8 @@ flask-ckeditor = "*"
 flask-login = "*"
 flask-mail = "*"
 flask-migrate = "*"
+unidecode = "*"
+requests = "*"
 
 [requires]
 python_version = "3.7"

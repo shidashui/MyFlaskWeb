@@ -25,6 +25,7 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     can_comment = db.Column(db.Boolean, default=True)
+    # slug = db.Column(db.String(60))
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
 
