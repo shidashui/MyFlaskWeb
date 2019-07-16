@@ -32,6 +32,8 @@ class BaseConfig(object):
 
 class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = prefix + os.path.join(basedir, 'data-dev.db')
+    BLUELOG_ADMIN_EMAIL = '164635470@qq.com'
+    BLUELOG_POST_PER_PAGE = 10
 
 class TestingConfig(BaseConfig):
     TESTING = True

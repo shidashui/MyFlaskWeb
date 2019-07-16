@@ -12,6 +12,7 @@ from blog.models import Category
 from .extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
 from .models import Admin
 from .settings import config
+from .blueprints.blog import blog_bp
 
 
 # app = Flask(__name__)
@@ -45,7 +46,7 @@ def register_extensions(app):
     moment.init_app(app)
 
 def register_blueprints(app):
-    pass
+    app.register_blueprint(blog_bp)
 
 def register_shell_context(app):
     @app.shell_context_processor
