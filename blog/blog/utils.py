@@ -16,9 +16,9 @@ def slugify(text, delim=u'-'):
     print(unidecode(delim.join(result)))
     return unidecode(delim.join(result))
 
-slugify(u'My Neighbor Totoro')
-slugify(u'邻家的豆豆龙')
-slugify(u'となりのトトロ')
+# slugify(u'My Neighbor Totoro')
+# slugify(u'邻家的豆豆龙')
+# slugify(u'となりのトトロ')
 
 
 def is_safe_url(target):

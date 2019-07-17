@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from .extensions import db
 
 class Admin(db.Model):
@@ -11,6 +13,20 @@ class Admin(db.Model):
     name = db.Column(db.String(30))
     about = db.Column(db.Text)
 
+    @property
+    def password(self):
+        raise AttributeError('该属性不可读')
+
+    """
+    user = Admin()
+    user.password = 'cat'
+    """
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def validate_password(self, password):
+        return check_password_hash(self.password_hash,password)
 
 #分类
 class Category(db.Model):

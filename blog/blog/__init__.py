@@ -83,3 +83,38 @@ def register_commands(app):
         fake_comments(comment)
         click.echo('完成')
 
+
+    @app.cli.command()
+    @click.option('--username', prompt=True, help='用于登陆的用户名')
+    @click.option('--password', prompt=True, hide_input=True,confirmation_prompt=True,
+                  help='用于登陆的密码')
+    # @click.password_option('--password') 等价于上一行
+    def init(username, password):
+        click.echo('初始化数据库')
+        db.create_all()
+        admin = Admin.query.first()
+        if admin:
+            click.echo('用户存在，更新密码和用户名')
+            admin.username = username
+            admin.password = password
+            #admin.set_password(password)
+        else:
+            click.echo('创建用户')
+            admin = Admin(
+                username=username,
+                blog_title='ShuiBlog',
+                blog_sub_title='小标题',
+                name='CoderShui',
+                about='你好，我是codershui，一名学过心理学的程序猿',
+                password=password
+            )
+            db.session.add(admin)
+
+        category = Category.query.first()
+        if category is None:
+            click.echo('创建默认分类')
+            category = Category(name='Default')
+            db.session.add(category)
+
+        db.session.commit()
+        click.echo('完成')
