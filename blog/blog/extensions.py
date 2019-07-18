@@ -23,11 +23,11 @@ migrate = Migrate()
 
 @login_manager.user_loader
 def load_user(user_id):
-    from blog.blog.models import Admin
+    from blog.models import Admin
     user = Admin.query.get(int(user_id))
     return user
 
 login_manager.login_view = 'auth.login'
 # login_manager.login_message = 'Your custom message'
-login_manager.login_message_category = 'warning'
+login_manager.login_message_category = '请先登陆'
 

@@ -4,7 +4,7 @@ from wtforms import StringField, PasswordField, SubmitField, BooleanField, Selec
     HiddenField
 from wtforms.validators import DataRequired, Length, Email, URL, Optional
 
-from blog import Category
+from blog.models import Category
 
 
 class LoginForm(FlaskForm):

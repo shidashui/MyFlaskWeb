@@ -16,7 +16,8 @@ def fake_admin():
         blog_title='Blog',
         blog_sub_title="No, I'm the real thing.",
         name='shui',
-        about='你好，我是codershui，一名学过心理学的程序猿'
+        about='你好，我是codershui，一名学过心理学的程序猿',
+        password='123456'
     )
     db.session.add(admin)
     db.session.commit()

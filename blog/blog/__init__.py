@@ -8,6 +8,8 @@ from flask_login import current_user
 from flask_sqlalchemy import get_debug_queries
 from flask_wtf.csrf import CSRFError
 
+from blog.blueprints.admin import admin_bp
+from blog.blueprints.auth import auth_bp
 from blog.models import Category
 from .extensions import bootstrap, db, login_manager, csrf, ckeditor, mail, moment, toolbar, migrate
 from .models import Admin
@@ -44,9 +46,13 @@ def register_extensions(app):
     ckeditor.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
+    login_manager.init_app(app)
+    csrf.init_app(app)
 
 def register_blueprints(app):
     app.register_blueprint(blog_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
 
 def register_shell_context(app):
     @app.shell_context_processor
@@ -64,6 +70,10 @@ def register_errors(app):
     @app.errorhandler(400)
     def bad_request(e):
         return render_template('errors/400.html'), 400
+
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(e):
+        return render_template('errors/400.html', description=e.description), 400
 
 def register_commands(app):
 
