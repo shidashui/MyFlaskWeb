@@ -38,6 +38,7 @@ class DevelopmentConfig(BaseConfig):
     BLUELOG_ADMIN_EMAIL = '164635470@qq.com'
     BLUELOG_POST_PER_PAGE = 10
     BLUELOG_COMMENT_PER_PAGE = 10
+    BLUEBLOG_MANAGE_POST_PER_PAGE = 10
 
 class TestingConfig(BaseConfig):
     TESTING = True
