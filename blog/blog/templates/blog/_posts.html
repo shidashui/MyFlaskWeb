@@ -7,7 +7,7 @@
         </p>
         <small>
             评论: <a href="{{url_for('.show_post',post_id=post.id)}}#comments">{{post.comments|length}}</a>
-            分类: <a href="{{url_for('.show_category',category_id=post.category.id}}">{{post.category.name}}</a>
+            分类: <a href="{{url_for('.show_category',category_id=post.category.id)}}">{{post.category.name}}</a>
             <span class="float-right">{{moment(post.timestamp).format('LL')}}</span>
         </small>
         {%if not loop.last%}}

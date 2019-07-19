@@ -32,13 +32,18 @@ class BaseConfig(object):
     #('theme name', 'display name')
     BLUELOG_THEMES = {'perfect_blue':'Perfect Blue', 'black_swan':'Black Swan'}
 
-
-class DevelopmentConfig(BaseConfig):
-    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(basedir, 'data-dev.db')
     BLUELOG_ADMIN_EMAIL = '164635470@qq.com'
     BLUELOG_POST_PER_PAGE = 10
     BLUELOG_COMMENT_PER_PAGE = 10
-    BLUEBLOG_MANAGE_POST_PER_PAGE = 10
+    BLUELOG_MANAGE_POST_PER_PAGE = 10
+
+    #ckeditor
+    BLUELOG_UPLOAD_PATH = os.path.join(basedir, 'uploads')
+    BLUELOG_ALLOWED_IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif']
+
+class DevelopmentConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = prefix + os.path.join(basedir, 'data-dev.db')
+
 
 class TestingConfig(BaseConfig):
     TESTING = True

@@ -9,7 +9,7 @@ from blog.models import Category
 
 class LoginForm(FlaskForm):
     username = StringField('用户名', validators=[DataRequired(), Length(1,20)])
-    password = PasswordField('密码', validators=[DataRequired(), Length(8,128)])
+    password = PasswordField('密码', validators=[DataRequired(), Length(6,128)])
     remember = BooleanField('记住我')
     submit = SubmitField('登陆')
 
@@ -42,3 +42,17 @@ class AdminCommentForm(CommentForm):
     author = HiddenField()
     email = HiddenField()
     site = HiddenField()
+
+
+class LinkForm(FlaskForm):
+    name = StringField('标题', validators=[DataRequired(), Length(1,30)])
+    url = StringField('链接', validators=[DataRequired(), URL(), Length(1,255)])
+    submit = SubmitField()
+
+
+class SettingForm(FlaskForm):
+    name = StringField('名字',validators=[DataRequired(), Length(1,30)])
+    blog_title = StringField('博客标题', validators=[DataRequired(), Length(1,60)])
+    blog_sub_title = StringField('副标题', validators=[DataRequired(), Length(1,100)])
+    about = CKEditorField('详情页面', validators=[DataRequired()])
+    submit = SubmitField()
