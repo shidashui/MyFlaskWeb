@@ -21,6 +21,7 @@ flask-mail = "*"
 flask-migrate = "*"
 unidecode = "*"
 requests = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"
