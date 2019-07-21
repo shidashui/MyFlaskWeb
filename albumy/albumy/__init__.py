@@ -6,6 +6,7 @@
 """
 import os
 
+import click
 from flask import Flask, render_template
 
 from albumy.extentions import bootstrap, db, mail, moment
@@ -74,4 +75,22 @@ def register_errorhandlers(app):
 
 
 def register_commands(app):
-    pass
+    @app.cli.command()
+    @click.option('--drop', is_flag=True,help='先删除后创建')
+    def initdb(drop):
+        if drop:
+            click.confirm('此操作会删除数据库，确认？',abort=True)
+            db.drop_all()
+            click.echo('删除表')
+        db.create_all()
+        click.echo('初始化数据库')
+
+    @app.cli.command()
+    def init():
+        click.echo('正在初始化数据库。。。')
+        db.create_all()
+        click.echo('ok')
+
+    @app.cli.command()
+    def forge():
+        pass
