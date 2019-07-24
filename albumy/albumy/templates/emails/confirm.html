@@ -1,0 +1,6 @@
+<p>你好, {{ user.username }},</p>
+<p>欢迎来到<b>Albumy</b>!</p>
+<p>请访问一下链接来验证你的邮箱：<br>
+    <a href="{{ url_for('auth.confirm', token=token,_external=True) }}">{{ url_for('auth.confirm',token=token,_external=True) }}</a>
+</p>
+<small>(Please do not reply to this notification, this inbox is not monitored.)</small>

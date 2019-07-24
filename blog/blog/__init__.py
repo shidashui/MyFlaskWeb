@@ -134,3 +134,4 @@ def register_commands(app):
 
         db.session.commit()
         click.echo('完成')
+

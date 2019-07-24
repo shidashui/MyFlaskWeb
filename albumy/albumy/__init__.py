@@ -9,6 +9,7 @@ import os
 import click
 from flask import Flask, render_template
 
+from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.extentions import bootstrap, db, mail, moment, login_manager
 from albumy.models import User
@@ -44,7 +45,7 @@ def register_extensions(app):
 def register_blueprints(app):
     app.register_blueprint(main_bp)
     # app.register_blueprint(user_bp, url_prefix='/user')
-    # app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
 
 def register_shell_context(app):

@@ -1,0 +1,7 @@
+你好{{ user.username}}
+
+欢迎来到Albumy！
+
+请访问一下链接来验证你的邮箱：
+    {{ url_for('auth.confirm', token=token, _external=True) }}
+(Please do not reply to this notification, this inbox is not monitored.)
