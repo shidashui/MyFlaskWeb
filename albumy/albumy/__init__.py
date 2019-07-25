@@ -11,8 +11,9 @@ from flask import Flask, render_template
 
 from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
+from albumy.blueprints.user import user_bp
 from albumy.extentions import bootstrap, db, mail, moment, login_manager
-from albumy.models import User
+from albumy.models import User, Role, Permission
 from albumy.settings import config
 
 
@@ -44,14 +45,14 @@ def register_extensions(app):
 
 def register_blueprints(app):
     app.register_blueprint(main_bp)
-    # app.register_blueprint(user_bp, url_prefix='/user')
+    app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
 
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db, User=User)
+        return dict(db=db, User=User, Role=Role, Permission=Permission)
 
 
 def register_template_context(app):
@@ -93,20 +94,23 @@ def register_commands(app):
 
     @app.cli.command()
     def init():
-        click.echo('正在初始化数据库。。。')
-        db.create_all()
+        click.echo('正在初始化角色和权限。。。')
+        # db.create_all()
+        Role.init_role()
         click.echo('ok')
 
-    # @app.cli.command()
-    # @click.option('--user', default=10, help='用户数量，默认10')
-    # def forge(user):
-    #     from albumy.fakes import fake_admin, fake_user
-    #
-    #     db.drop_all()
-    #     db.create_all()
-    #
-    #     click.echo('创建管理员')
-    #     fake_admin()
-    #     click.echo('生成用户')
-    #     fake_user(user)
-    #     click.echo('ok')
+    @app.cli.command()
+    @click.option('--user', default=10, help='用户数量，默认10')
+    def forge(user):
+        from albumy.fakes import fake_admin, fake_user
+
+        db.drop_all()
+        db.create_all()
+
+        click.echo('初始化角色和权限')
+        Role.init_role()
+        click.echo('创建管理员')
+        fake_admin()
+        click.echo('生成用户')
+        fake_user(user)
+        click.echo('ok')

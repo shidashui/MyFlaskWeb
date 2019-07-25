@@ -3,8 +3,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from albumy.models import User
 from albumy.extentions import db
-from albumy.emails import send_confirm_email
-from albumy.forms.auth import RegisterForm, LoginForm
+from albumy.emails import send_confirm_email, send_reset_password_email
+from albumy.forms.auth import RegisterForm, LoginForm, ForgetPasswordForm, ResetPasswordForm
 from albumy.settings import Operations
 from albumy.utils import generate_token, validate_token, redirect_back
 
@@ -82,6 +82,38 @@ def resend_confrim_email():
     return redirect(url_for('main.index'))
 
 
+#重置密码，忘记密码发送邮件在重置
 @auth_bp.route('/forget-password', methods=['GET','POST'])
 def forget_password():
-    pass
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    form = ForgetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data.lower()).first()
+        if user:
+            token = generate_token(user=user,operation=Operations.RESET_PASSWORD)
+            send_reset_password_email(user=user, token=token)
+            flash('重置密码的邮件已发', 'info')
+            return redirect(url_for('.login'))
+        flash('邮箱错误', 'warning')
+        return redirect(url_for('.forget_password'))
+    return render_template('auth/reset_password.html', form=form)
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data.lower()).first()
+        if user is None:
+            return redirect(url_for('main.index'))
+        if validate_token(user=user,token=token, operation=Operations.RESET_PASSWORD,new_password=form.password.data):
+            flash('已修改密码', 'success')
+            return redirect(url_for('.login'))
+        else:
+            flash('链接失效或过期', 'danger')
+            return redirect(url_for('.forget_password'))
+    return render_template('auth/reset_password.html', form=form)

@@ -28,3 +28,15 @@ class RegisterForm(FlaskForm):
     def validate_username(self, field):
         if User.query.filter_by(username=field.data).first():
             raise ValidationError('用户已存在')
+
+
+class ForgetPasswordForm(FlaskForm):
+    email = StringField('邮箱', validators=[DataRequired(), Length(1,254), Email()])
+    submit = SubmitField()
+
+
+class ResetPasswordForm(FlaskForm):
+    email = StringField('邮箱', validators=[DataRequired(), Length(1,254), Email()])
+    password = PasswordField('密码', validators=[DataRequired(), Length(8,128), EqualTo('password2')])
+    password2 = PasswordField('确认密码', validators=[DataRequired()])
+    submit = SubmitField()

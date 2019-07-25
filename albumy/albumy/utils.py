@@ -33,7 +33,7 @@ def flash_errors(form):
 
 
 def generate_token(user, operation, expire_in=None, **kwargs):
-    s = Serializer(current_app.config['SECRET_KEY'], expire_in)
+    s = Serializer(current_app.config['SECRET_KEY'])
     data = {'id':user.id, 'operation':operation}
     data.update(**kwargs)
     token = s.dumps(data)
@@ -44,10 +44,11 @@ def generate_token(user, operation, expire_in=None, **kwargs):
 
 def validate_token(user, token, operation, new_password=None):
     s = Serializer(current_app.config['SECRET_KEY'])
-    print(token)
+    # print(token)
     try:
         data = s.loads(token)
     except (SignatureExpired, BadSignature) as e:
+        print('------------------------------',e)
         return False
 
     if operation != data.get('operation') or user.id != data.get('id'):
@@ -55,8 +56,10 @@ def validate_token(user, token, operation, new_password=None):
 
     if operation == Operations.CONFIRM:
         user.confirmed = True
+
     elif operation == Operations.RESET_PASSWORD:
         user.set_password(new_password)
+
     elif operation == Operations.CHANGE_EMAIL:
         new_email = data.get('new_email')
         if new_email is None:
