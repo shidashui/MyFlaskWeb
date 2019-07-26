@@ -1,3 +1,4 @@
+from flask_avatars import Avatars
 from flask_bootstrap import Bootstrap
 from flask_dropzone import Dropzone
 from flask_login import LoginManager, AnonymousUserMixin
@@ -13,6 +14,7 @@ mail = Mail()
 moment = Moment()
 dropzone = Dropzone()
 csrf = CSRFProtect()
+avatars = Avatars()
 
 @login_manager.user_loader
 def load_user(user_id):

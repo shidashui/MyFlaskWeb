@@ -45,7 +45,9 @@
                             </a>
                             <div class="dropdown nav-item">
                                 <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-                                    {{ current_user.name }}<span class="caret"></span>
+{#                                    {{ current_user.name }}<span class="caret"></span>#}
+                                    <img class="avatar-xs" src="{{ url_for('main.get_avatar',filename=current_user.avatar_s) }}">
+                                    <span class="caret"></span>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" role="menu">
                                     <h6 class="dropdown-header">{{ current_user.username }}已经登陆</h6>

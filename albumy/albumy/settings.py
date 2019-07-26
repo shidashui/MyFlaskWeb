@@ -43,6 +43,10 @@ class BaseConfig:
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False   #是否追踪对象的修改（占额外内存）
 
+    #头像配置
+    AVATARS_SAVE_PATH = os.path.join(ALBUMY_UPLOAD_PATH, 'avatars')
+    AVATARS_SIZE_TUPLE = (30,100,200)   #头像尺寸
+
     #邮箱
     MAIL_SERVER = os.getenv('MAIL_SERVER')
     MAIL_PORT = 465
