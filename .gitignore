@@ -111,5 +111,5 @@ venv.bak/
 PIPENV_VENV_IN_PROJECT/
 
 # image
-.jpeg
-.jpg
+*.jpeg
+*.jpg
