@@ -18,6 +18,7 @@ def confirm_required(func):
         return func(*args, **kwargs)
     return decorated_function
 
+
 def permission_required(permission_name):
     def decorator(func):
         @wraps(func)

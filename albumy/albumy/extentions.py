@@ -1,15 +1,18 @@
 from flask_bootstrap import Bootstrap
+from flask_dropzone import Dropzone
 from flask_login import LoginManager, AnonymousUserMixin
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
-
+from flask_wtf import CSRFProtect
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 login_manager = LoginManager()
 mail = Mail()
 moment = Moment()
+dropzone = Dropzone()
+csrf = CSRFProtect()
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -22,6 +25,7 @@ login_manager.login_view = 'auth.login'
 login_manager.login_message_category = 'warning'
 
 
+#匿名用户的权限管理
 class Guest(AnonymousUserMixin):
     @property
     def is_admin(selfs):

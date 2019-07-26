@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     role = db.relationship('Role', back_populates='users')
+    photos = db.relationship('Photo', back_populates='author', cascade='all') #级联设为all，用户被删除，相应图片全删除
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -89,3 +90,14 @@ class Role(db.Model):
                     db.session.add(permission)
                 role.permissions.append(permission)
         db.session.commit()
+
+
+class Photo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(500))
+    filename = db.Column(db.String(64))
+    filename_s = db.Column(db.String(64)) #小图
+    filename_m = db.Column(db.String(64)) #中图
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    author = db.relationship('User', back_populates='photos')

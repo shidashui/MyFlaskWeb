@@ -23,6 +23,7 @@ requests = "*"
 pillow = "*"
 flask = "*"
 sendgrid = "*"
+flask-dropzone = "*"
 
 [requires]
 python_version = "3.7"

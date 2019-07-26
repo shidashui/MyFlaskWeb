@@ -8,12 +8,13 @@ import os
 
 import click
 from flask import Flask, render_template
+from flask_wtf.csrf import CSRFError
 
 from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
-from albumy.extentions import bootstrap, db, mail, moment, login_manager
-from albumy.models import User, Role, Permission
+from albumy.extentions import bootstrap, db, mail, moment, login_manager, dropzone, csrf
+from albumy.models import User, Role, Permission, Photo
 from albumy.settings import config
 
 
@@ -41,7 +42,8 @@ def register_extensions(app):
     login_manager.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
-
+    dropzone.init_app(app)
+    csrf.init_app(app)
 
 def register_blueprints(app):
     app.register_blueprint(main_bp)
@@ -52,7 +54,7 @@ def register_blueprints(app):
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db, User=User, Role=Role, Permission=Permission)
+        return dict(db=db, User=User, Role=Role, Permission=Permission,Photo=Photo)
 
 
 def register_template_context(app):
@@ -80,6 +82,10 @@ def register_errorhandlers(app):
     def internal_server_error(e):
         return  render_template('errors/500.html'), 500
 
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(e):
+        return render_template('errors/400.html', description=e.description), 500
+
 
 def register_commands(app):
     @app.cli.command()
@@ -101,8 +107,9 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--user', default=10, help='用户数量，默认10')
-    def forge(user):
-        from albumy.fakes import fake_admin, fake_user
+    @click.option('--photo', default=30, help='照片数量，默认500')
+    def forge(user, photo):
+        from albumy.fakes import fake_admin, fake_user,fake_photo
 
         db.drop_all()
         db.create_all()
@@ -113,4 +120,6 @@ def register_commands(app):
         fake_admin()
         click.echo('生成用户')
         fake_user(user)
+        # click.echo('生成照片。。。')
+        # fake_photo(photo)
         click.echo('ok')
