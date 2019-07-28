@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width-device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block head %}
         <title>{%block title %}{%endblock%} - 相册</title>
         <link rel="shortcut icon" href="{{url_for('static',filename='favicon.ico')}}">
@@ -51,6 +51,9 @@
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-right" role="menu">
                                     <h6 class="dropdown-header">{{ current_user.username }}已经登陆</h6>
+                                    <a class="dropdown-item" href="{{ url_for('user.index', username=current_user.username) }}">
+                                        <span class="oi oi-person"></span> 个人主页
+                                    </a>
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
                                         <span class="oi oi-power-standby"></span> 登出
@@ -98,7 +101,7 @@
     <script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/popper.min.js')}}"></script>
     <script src="{{url_for('static', filename='js/bootstrap.min.js')}}"></script>
-    {{moment.include_moment(local_js=url_for('static', filename='js/momment-with-locales.min.js'))}}
+    {{ moment.include_moment(local_js=url_for('static', filename='js/moment-with-locales.min.js')) }}
     <script src="{{url_for('static', filename='js/script.js')}}"></script>
 {% endblock %}
 </html>

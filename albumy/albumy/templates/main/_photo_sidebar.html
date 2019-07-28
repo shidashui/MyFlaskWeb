@@ -1,0 +1,10 @@
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('.photo_previous', photo_id=photo.id) }}">&larr;上一张</a>
+        </li>
+        <li>
+            <a class="page-link" href="{{ url_for('.photo_next', photo_id=photo.id) }}">下一张&rarr;</a>
+        </li>
+    </ul>
+</nav>

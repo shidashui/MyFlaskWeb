@@ -1,6 +1,6 @@
 import os
 
-from flask import render_template, Blueprint, request, current_app, send_from_directory
+from flask import render_template, Blueprint, request, current_app, send_from_directory, flash, redirect, url_for, abort
 from flask_login import login_required, current_user
 
 from albumy.extentions import db
@@ -46,3 +46,50 @@ def upload():
 @main_bp.route('/avatars/<path:filename>')
 def get_avatar(filename):
     return send_from_directory(current_app.config['AVATARS_SAVE_PATH'], filename)
+
+
+@main_bp.route('/uploads/<path:filename>')
+def get_image(filename):
+    return send_from_directory(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
+
+@main_bp.route('/photo/<int:photo_id>')
+def show_photo(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    return render_template('main/photo.html', photo=photo)
+
+@main_bp.route('/photo/n/<int:photo_id')
+def photo_next(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    photo_n = Photo.query.with_parent(photo.author).filter(Photo.id<photo_id).order_by(Photo.id.desc()).first()
+    if photo_n is None:
+        flash('已经是最后一张图片啦！', 'info')
+        return redirect(url_for('.show_photo', photo_id=photo_id))
+    return redirect(url_for('.show_photo', photo_id=photo_n.id))
+
+@main_bp.route('/photo/p/<int:photo_id>')
+def photo_previous(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    photo_p = Photo.query.with_parent(photo.author).filter(Photo.id>photo_id).order_by(Photo.id.asc()).first()
+    if photo_p is None:
+        flash('已经是第一张图片了！', 'info')
+        return redirect(url_for('.show_photo', photo_id=photo_id))
+    return redirect(url_for('.show_photo', photo_id=photo_p.id))
+
+@main_bp.route('/delete/photo/<int:photo_id>', methods=['POST'])
+@login_required
+def delete_photo(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    if current_user != photo.author:
+        abort(403)
+    db.session.delete(photo)
+    db.session.commit()
+    flash('已删除图片', 'info')
+
+    #删除后返回下一张图片，没有则返回上一张，也没有则返回用户首页
+    photo_n = Photo.query.with_parent(photo.author).filter(Photo,id<photo_id).order_by(Photo.id.desc()).first()
+    if photo_n is None:
+        photo_p = Photo.query.with_parent(photo.author).filter(Photo.id>photo_id).order_by(Photo.id.asc()).first()
+        if photo_p is None:
+            return redirect(url_for('user.index', username=photo.author.username))
+        return redirect(url_for('.show_photo', photo_id=photo_p.id))
+    return redirect(url_for('.show_photo', photo_id=photo_n.id))
