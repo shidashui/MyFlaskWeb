@@ -1,23 +1,12 @@
-print(__name__.split('.')[0])
-print(__file__)
+class A:
+    a = [1,2,3]
+    b = [4,5,6]
+    c = [7,8,9]
 
 
-a = '1.2.3.4'
-b = a.split('.')
-c = ''
-d = c.join(b)
-print(d)
+print(A.a)
+print(A.b)
+print(A.c)
 
-
-a = '1010'
-b = '10'
-d = len(b)-len(a)
-a = '0'*d +a
-b = '0'* -d +b
-print(zip(a,b))
-for i,j in zip(a,b):
+for i in [A.a, A.b, A.c]:
     print(i)
-
-print(a)
-print(b)
-print(d)

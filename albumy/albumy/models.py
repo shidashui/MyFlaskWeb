@@ -28,6 +28,7 @@ class User(db.Model, UserMixin):
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     role = db.relationship('Role', back_populates='users')
     photos = db.relationship('Photo', back_populates='author', cascade='all') #级联设为all，用户被删除，相应图片全删除
+    comments = db.relationship('Comment', back_populates='author', cascade='all')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -106,6 +107,12 @@ class Role(db.Model):
         db.session.commit()
 
 
+tagging = db.Table('tagging',
+                   db.Column('photo_id',db.Integer, db.ForeignKey('photo.id')),
+                   db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+                   )
+
+
 class Photo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(500))
@@ -116,6 +123,32 @@ class Photo(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     author = db.relationship('User', back_populates='photos')
 
+    flag = db.Column(db.Integer, default=0)  #被举报次数
+    can_cmment = db.Column(db.Boolean, default=True)
+    comments = db.relationship('Comment', back_populates='photo', cascade='all')
+    tags = db.relationship('Tag', secondary=tagging, back_populates='photos')
+
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+    photos = db.relationship('Photo', secondary=tagging, back_populates='tags')
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    flag = db.Column(db.Integer, default=0)  #举报次数
+
+    replied_id = db.Column(db.Integer, db.ForeignKey('comment.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'))
+
+    photo = db.relationship('Photo', back_populates='comments')
+    author = db.relationship('User', back_populates='comments')
+    replies = db.relationship('Comment', back_populates='replied', cascade='all')
+    replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
 
 #图片删除事件监听函数
 @db.event.listens_for(Photo, 'after_delete', named=True)
