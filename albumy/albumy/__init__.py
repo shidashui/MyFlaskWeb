@@ -15,7 +15,7 @@ from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
 from albumy.extentions import bootstrap, db, mail, moment, login_manager, dropzone, csrf, avatars
-from albumy.fakes import fake_comment
+from albumy.fakes import fake_comment, fake_collect, fake_tag
 from albumy.models import User, Role, Permission, Photo
 from albumy.settings import config
 
@@ -110,10 +110,12 @@ def register_commands(app):
         click.echo('ok')
 
     @app.cli.command()
-    @click.option('--user', default=10, help='用户数量，默认10')
+    @click.option('--user', default=5, help='用户数量，默认10')
+    @click.option('--tag', default=10, help=('标签数量, 默认10'))
     @click.option('--photo', default=30, help='照片数量，默认30')
-    @click.option('--comment', default=100, help='照片数量，默认100')
-    def forge(user, photo, comment):
+    @click.option('--comment', default=50, help='照片数量，默认100')
+    @click.option('--collect', default=20, help='照片数量，默认50')
+    def forge(user,tag, photo, comment,collect):
         from albumy.fakes import fake_admin, fake_user,fake_photo
 
         db.drop_all()
@@ -125,8 +127,12 @@ def register_commands(app):
         fake_admin()
         click.echo('生成用户')
         fake_user(user)
-        # click.echo('生成照片。。。')
-        # fake_photo(photo)
-        # click.echo('生成评论')
-        # fake_comment(comment)
+        click.echo('生成标签')
+        fake_tag(tag)
+        click.echo('生成照片。。。')
+        fake_photo(photo)
+        click.echo('生成评论')
+        fake_comment(comment)
+        click.echo('生成收藏')
+        fake_collect(collect)
         click.echo('ok')

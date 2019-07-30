@@ -96,7 +96,8 @@
                         <img class="rounded img-fluid avatar-s" src="{{ url_for('main.get_avatar', filename=current_user.avatar_m) }}">
                     </div>
                     <div class="comment-form" id="comment-form">
-                        {{ render_form(comment_form, action=url_for('.new_comment', photo_id=photo.id, page=pagination.pages or 1), extra_classes="text-right") }}
+                        {{ render_form(comment_form, action=url_for('.new_comment', photo_id=photo.id, page=pagination.pages or 1,
+                                reply=request.args.get('reply')), extra_classes="text-right") }}
                     </div>
                 </div>
             {% else %}

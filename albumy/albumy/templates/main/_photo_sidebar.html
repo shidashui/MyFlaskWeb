@@ -86,4 +86,33 @@
             {% endif %}
         </div>
     {% endif %}
+
+    <!--收藏和取消收藏-->
+    {% if current_user.is_authenticated %}
+        {% if current_user.is_collecting(photo) %}
+            <form class="inline" method="post" action="{{ url_for('main.uncollect', photo_id=photo.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                    <span class="oi oi-x"></span>取消收藏
+                </button>
+            </form>
+        {% else %}
+            <form class="inline" method="post" action="{{ url_for('main.collect', photo_id=photo.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                    <span class="oi oi-star"></span>收藏
+                </button>
+            </form>
+        {% endif %}
+    {% else %}
+        <form class="inline" method="post" action="{{ url_for('main.collect', photo_id=photo.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn btn-primary btn-sm">
+                <span class="oi oi-star"></span>收藏
+            </button>
+        </form>
+    {% endif %}
+    {% if photo.collectors %}
+        <a href="{{ url_for('main.show_collectors', photo_id=photo.id) }}">{{ photo.collectors|length }}人收藏</a>
+    {% endif %}
 </div>

@@ -95,3 +95,9 @@ def fake_comment(count=100):
         )
         db.session.add(comment)
     db.session.commit()
+
+def fake_collect(count=50):
+    for i in range(count):
+        user = User.query.get(random.randint(1,User.query.count()))
+        user.collect(Photo.query.get(random.randint(1,Photo.query.count())))
+    db.session.commit()

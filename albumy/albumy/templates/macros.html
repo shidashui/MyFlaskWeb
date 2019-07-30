@@ -9,3 +9,14 @@
         </div>
     </div>
 {% endmacro %}
+
+{% macro user_card(user) %}
+    <div class="user-card text-center">
+        <a href="{{ url_for('user.index', username=user.username) }}">
+            <img class="rounded avata-m" src="{{ url_for('main.get_avatar', filename=user.avatar_m) }}">
+        </a>
+        <h6>
+            <a href="{{ url_for('user.index', username=user.username) }}">{{ user.name }}</a>
+        </h6>
+    </div>
+{% endmacro %}
