@@ -10,10 +10,12 @@ import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError
 
+from albumy.blueprints.ajax import ajax_bp
 from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
 from albumy.extentions import bootstrap, db, mail, moment, login_manager, dropzone, csrf, avatars
+from albumy.fakes import fake_comment
 from albumy.models import User, Role, Permission, Photo
 from albumy.settings import config
 
@@ -50,6 +52,7 @@ def register_blueprints(app):
     app.register_blueprint(main_bp)
     app.register_blueprint(user_bp, url_prefix='/user')
     app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(ajax_bp, url_prefix='/ajax')
 
 
 def register_shell_context(app):
@@ -108,8 +111,9 @@ def register_commands(app):
 
     @app.cli.command()
     @click.option('--user', default=10, help='用户数量，默认10')
-    @click.option('--photo', default=30, help='照片数量，默认500')
-    def forge(user, photo):
+    @click.option('--photo', default=30, help='照片数量，默认30')
+    @click.option('--comment', default=100, help='照片数量，默认100')
+    def forge(user, photo, comment):
         from albumy.fakes import fake_admin, fake_user,fake_photo
 
         db.drop_all()
@@ -123,4 +127,6 @@ def register_commands(app):
         fake_user(user)
         # click.echo('生成照片。。。')
         # fake_photo(photo)
+        # click.echo('生成评论')
+        # fake_comment(comment)
         click.echo('ok')

@@ -102,7 +102,7 @@ def delete_photo(photo_id):
     flash('已删除图片', 'info')
 
     #删除后返回下一张图片，没有则返回上一张，也没有则返回用户首页
-    photo_n = Photo.query.with_parent(photo.author).filter(Photo,id<photo_id).order_by(Photo.id.desc()).first()
+    photo_n = Photo.query.with_parent(photo.author).filter(Photo.id<photo_id).order_by(Photo.id.desc()).first()
     if photo_n is None:
         photo_p = Photo.query.with_parent(photo.author).filter(Photo.id>photo_id).order_by(Photo.id.asc()).first()
         if photo_p is None:
@@ -227,6 +227,7 @@ def new_comment(photo_id):
     flash_errors(form)
     return redirect(url_for('.show_photo', photo_id=photo_id,page=page))
 
+
 @main_bp.route('/set-comment/<int:photo_id>', methods=['POST'])
 @login_required
 def set_comment(photo_id):
@@ -234,5 +235,33 @@ def set_comment(photo_id):
     if current_user != photo.author:
         abort(403)
 
-    if photo.can_cmment = True
-    
+    if photo.can_comment:
+        photo.can_comment = False
+        flash('已禁止评论', 'info')
+    else:
+        photo.can_comment = True
+        flash('可以评论', 'info')
+    db.session.commit()
+    return redirect(url_for('.show_photo', photo_id=photo_id))
+
+
+@main_bp.route('/reply/comment/<int:comment_id>')
+@login_required
+@permission_required('COMMENT')
+def reply_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    print(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name, _external=True)+'#comment-form')
+    return redirect(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name)+'#comment-form')
+
+
+@main_bp.route('/delete/comment/<int:comment_id>', methods=['POST'])
+@login_required
+def delete_comment(comment_id):
+    comment = Comment.query.get_or_404(comment_id)
+    if current_user != comment.author and current_user !=comment.photo.author:
+        abort(403)
+
+    db.session.delete(comment)
+    db.session.commit()
+    flash('已删除评论', 'info')
+    return redirect(url_for('.show_photo', photo_id=comment.photo_id))

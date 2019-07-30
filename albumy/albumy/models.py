@@ -124,7 +124,7 @@ class Photo(db.Model):
     author = db.relationship('User', back_populates='photos')
 
     flag = db.Column(db.Integer, default=0)  #被举报次数
-    can_cmment = db.Column(db.Boolean, default=True)
+    can_comment = db.Column(db.Boolean, default=True)
     comments = db.relationship('Comment', back_populates='photo', cascade='all')
     tags = db.relationship('Tag', secondary=tagging, back_populates='photos')
 

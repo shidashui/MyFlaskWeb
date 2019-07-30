@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import TextAreaField, SubmitField, StringField
-from wtforms.validators import Optional, Length
+from wtforms.validators import Optional, Length, DataRequired
 
 
 class DescriptionForm(FlaskForm):
@@ -13,4 +13,5 @@ class TagForm(FlaskForm):
     submit = SubmitField()
 
 class CommentForm(FlaskForm):
-    pass
+    body = TextAreaField('', validators=[DataRequired()])
+    submit = SubmitField()

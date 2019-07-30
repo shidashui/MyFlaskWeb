@@ -6,8 +6,7 @@ from faker import Faker
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
-from albumy import Photo
-from albumy.models import Tag, Comment
+from albumy.models import Tag, Comment,Photo
 from .extentions import db
 from .models import User
 

@@ -4,9 +4,12 @@
             <a href="{{ url_for('.show_photo', photo_id=photo.id, page=pagination.pages or 1) }}">最新评论</a>
         </small>
         {% if current_user == photo.author %}
-            <a class="btn btn-xs btn-link float-right" href="{{ url_for('.set_comment', photo_id=photo.id) }}">
-                {% if photo.can_comment %}禁止{% endif %}评论
-            </a>
+            <form class="inline" method="post" action="{{ url_for('.set_comment', photo_id=photo.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn-xs btn-link float-right">
+                    {% if photo.can_comment %}禁止{% endif %}评论
+                </button>
+            </form>
         {% endif %}
     </h3>
     <hr>
@@ -15,12 +18,16 @@
             <div class="comment">
                 <div class="comment-thumbnail">
                     <a href="{{ url_for('user.index', username=comment.author.username) }}">
-                        <img class="rounded img-fluid avatar-s" src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s) }}">
+                        <img class="rounded img-fluid avatar-s profile-popover"
+                             data-href="{{ url_for('ajax.get_profile', user_id=comment.author.id) }}"
+                             src="{{ url_for('main.get_avatar', filename=comment.author.avatar_s) }}">
                     </a>
                 </div>
                 <div class="comment-body">
                     <h6>
-                        <a href="{{ url_for('user.index', username=comment.author.username) }}">
+                        <a class="profile-popover"
+                           data-href="{{ url_for('ajax.get_profile', user_id=comment.author.id) }}"
+                           href="{{ url_for('user.index', username=comment.author.username) }}">
                             {{ comment.author.name }}
                         </a>
                         {% if comment.author == photo.author %}
@@ -89,7 +96,7 @@
                         <img class="rounded img-fluid avatar-s" src="{{ url_for('main.get_avatar', filename=current_user.avatar_m) }}">
                     </div>
                     <div class="comment-form" id="comment-form">
-                        {{ render_form(comment_form, action=url_for('.new_comment', photo_id=photo.id, page=pagination.pages), extra_classes="text-right") }}
+                        {{ render_form(comment_form, action=url_for('.new_comment', photo_id=photo.id, page=pagination.pages or 1), extra_classes="text-right") }}
                     </div>
                 </div>
             {% else %}
@@ -103,6 +110,6 @@
             </p>
         {% endif %}
     {% else %}
-        <p class="tip">不能评论</p>
+        <p class="tip">禁止评论</p>
     {% endif %}
 </div>
