@@ -29,5 +29,7 @@
     <ul class="nav nav-tabs">
         {{ render_nav_item('user.index', '图片', user.photos|length, username=user.username) }}
         {{ render_nav_item('user.show_collections', '收藏', user.collections|length, username=user.username) }}
+        {{ render_nav_item('user.show_following', '关注', user.following.count() - 1, username=user.username) }}
+        {{ render_nav_item('user.show_followers', '粉丝', user.followers.count() - 1, username=user.username) }}
     </ul>
 </div>

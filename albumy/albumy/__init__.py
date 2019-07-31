@@ -15,8 +15,7 @@ from albumy.blueprints.auth import auth_bp
 from albumy.blueprints.main import main_bp
 from albumy.blueprints.user import user_bp
 from albumy.extentions import bootstrap, db, mail, moment, login_manager, dropzone, csrf, avatars
-from albumy.fakes import fake_comment, fake_collect, fake_tag
-from albumy.models import User, Role, Permission, Photo
+from albumy.models import User, Role, Permission, Photo, Tag, Collect, Follow
 from albumy.settings import config
 
 
@@ -58,7 +57,8 @@ def register_blueprints(app):
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
-        return dict(db=db, User=User, Role=Role, Permission=Permission,Photo=Photo)
+        return dict(db=db, User=User, Role=Role, Permission=Permission,Photo=Photo,Tag=Tag,Collect=Collect,
+                    Follow=Follow)
 
 
 def register_template_context(app):
@@ -113,10 +113,11 @@ def register_commands(app):
     @click.option('--user', default=5, help='用户数量，默认10')
     @click.option('--tag', default=10, help=('标签数量, 默认10'))
     @click.option('--photo', default=30, help='照片数量，默认30')
-    @click.option('--comment', default=50, help='照片数量，默认100')
-    @click.option('--collect', default=20, help='照片数量，默认50')
-    def forge(user,tag, photo, comment,collect):
-        from albumy.fakes import fake_admin, fake_user,fake_photo
+    @click.option('--comment', default=100, help='评论数量，默认100')
+    @click.option('--collect', default=30, help='收藏数量，默认50')
+    @click.option('--follow', default=30, help='关注数量，默认30')
+    def forge(user,tag, photo, comment,collect,follow):
+        from albumy.fakes import fake_admin, fake_user,fake_photo,fake_comment, fake_collect, fake_tag, fake_follow
 
         db.drop_all()
         db.create_all()
@@ -127,6 +128,8 @@ def register_commands(app):
         fake_admin()
         click.echo('生成用户')
         fake_user(user)
+        click.echo('生成关注关系')
+        fake_follow(follow)
         click.echo('生成标签')
         fake_tag(tag)
         click.echo('生成照片。。。')

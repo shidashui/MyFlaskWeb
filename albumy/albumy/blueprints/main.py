@@ -252,7 +252,7 @@ def set_comment(photo_id):
 @permission_required('COMMENT')
 def reply_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
-    print(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name, _external=True)+'#comment-form')
+    # print(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name, _external=True)+'#comment-form')
     return redirect(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name)+'#comment-form')
 
 

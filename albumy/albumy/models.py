@@ -8,6 +8,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from albumy.extentions import db
 
+
 #photo和user的第三张表，可存储记录时间戳
 class Collect(db.Model):
     collector_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
@@ -15,6 +16,16 @@ class Collect(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     collector = db.relationship('User', back_populates='collections', lazy='joined') #lazy设为joined或者False,表示用连结查询，提高性能，减少一次查询
     collected = db.relationship('Photo', back_populates='collectors', lazy='joined')
+
+
+#用户关注第三张表
+class Follow(db.Model):
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    follower = db.relationship('User', foreign_keys=[follower_id], back_populates='following', lazy='joined')
+    followed = db.relationship('User', foreign_keys=[followed_id], back_populates='followers', lazy='joined')
 
 
 class User(db.Model, UserMixin):
@@ -39,10 +50,16 @@ class User(db.Model, UserMixin):
     comments = db.relationship('Comment', back_populates='author', cascade='all')
     collections = db.relationship('Collect', back_populates='collector', cascade='all')
 
+    following = db.relationship('Follow', foreign_keys=[Follow.follower_id], back_populates='follower',
+                                lazy='dynamic', cascade='all')
+    followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], back_populates='followed',
+                                lazy='dynamic', cascade='all')
+
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         self.generate_avatar()
+        self.follow(self) #follow self
         self.set_role()
 
     def generate_avatar(self):
@@ -92,6 +109,28 @@ class User(db.Model, UserMixin):
 
     def is_collecting(self, photo):
         return Collect.query.with_parent(self).filter_by(collected_id=photo.id).first() is not None
+
+    #关注和取消关注
+    def follow(self, user):
+        if not self.is_following(user):
+            follow = Follow(follower=self, followed=user)
+            db.session.add(follow)
+            db.session.commit()
+
+    def unfollow(self, user):
+        follow = self.following.filter_by(followed_id=user.id).first()
+        if follow:
+            db.session.delete(follow)
+            db.session.commit()
+
+    def is_following(self, user):
+        if user.id is None: #在实例化的时候，还未提交数据库，user.id为none,为了避免构造方法报错，就直接返回False
+            return False
+        return self.following.filter_by(followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+
 
 #权限管理(RBAC)
 roles_permissions = db.Table('roles_permissions',

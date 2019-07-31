@@ -1,5 +1,5 @@
 $(function () {
-    var default_error_message = 'Server error, please try again later.';
+    var default_error_message = '服务器错误，请重试';
 
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -133,15 +133,32 @@ $(function () {
         var $el = $(e.target);
         var id = $el.data('id');
 
+
         $.ajax({
             type: 'POST',
             url: $el.data('href'),
+            data:{
+              csrf_token:$el.data('csrf'),
+            },
             success: function (data) {
                 $el.prev().show();
                 $el.hide();
                 update_followers_count(id);
                 toast(data.message);
-            }
+                console.log(data);
+            },
+
+            // error: function (jqXHR, textStatus, errorThrown) {
+            // /*弹出jqXHR对象的信息*/
+            // alert(jqXHR.responseText);
+            // alert(jqXHR.status);
+            // alert(jqXHR.readyState);
+            // alert(jqXHR.statusText);
+            // /*弹出其他两个参数的信息*/
+            // alert(textStatus);
+            // alert(errorThrown);
+            // }
+
         });
     }
 
@@ -150,13 +167,15 @@ $(function () {
         var id = $el.data('id');
 
         $.ajax({
-            type: 'POST',
+            // type: 'POST',
             url: $el.data('href'),
             success: function (data) {
                 $el.next().show();
                 $el.hide();
+
                 update_followers_count(id);
                 toast(data.message);
+                console.log(data);
             }
         });
     }
