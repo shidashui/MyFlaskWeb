@@ -6,7 +6,7 @@ from faker import Faker
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
 
-from albumy.models import Tag, Comment,Photo
+from albumy.models import Tag, Comment, Photo, Notification
 from .extentions import db
 from .models import User
 
@@ -23,6 +23,8 @@ def fake_admin():
         confirmed=True
     )
     admin.set_password('123456')
+    notification = Notification(message='你好，欢迎来到Albumy', receiver=admin)
+    db.session.add(notification)
     db.session.add(admin)
     db.session.commit()
 
@@ -107,3 +109,4 @@ def fake_follow(count=30):
         user = User.query.get(random.randint(1,User.query.count()))
         user.follow(User.query.get(random.randint(1,User.query.count())))
     db.session.commit()
+
