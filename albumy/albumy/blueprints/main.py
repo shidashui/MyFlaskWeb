@@ -218,9 +218,7 @@ def new_comment(photo_id):
         author = current_user._get_current_object()
         comment = Comment(body=body, author=author, photo=photo)
 
-        print(request.args)
         replied_id = request.args.get('reply')
-        print(replied_id)
         if replied_id:
             comment.replied = Comment.query.get_or_404(replied_id)
         db.session.add(comment)
@@ -252,7 +250,6 @@ def set_comment(photo_id):
 @permission_required('COMMENT')
 def reply_comment(comment_id):
     comment = Comment.query.get_or_404(comment_id)
-    # print(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name, _external=True)+'#comment-form')
     return redirect(url_for('.show_photo', photo_id=comment.photo_id, reply=comment_id,author=comment.author.name)+'#comment-form')
 
 

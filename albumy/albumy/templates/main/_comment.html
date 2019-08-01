@@ -78,6 +78,9 @@
             </div>
             <hr>
         {% endfor %}
+        <div class="page-footer">
+            {{ render_pagination(pagination) }}
+        </div>
     {% else %}
         <p class="tip">没有评论</p>
     {% endif %}

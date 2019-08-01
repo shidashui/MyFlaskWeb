@@ -1,5 +1,6 @@
 $(function () {
     var default_error_message = '服务器错误，请重试';
+    var csrf_token = "{{ csrf_token() }}";
 
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -86,6 +87,9 @@ $(function () {
             setTimeout(function () {
                 if (!$('.popover:hover').length) {
                     $el.popover('hide');
+
+                    //这里需要销毁这个pop over，否则实际中会无法实时更新关注状态
+                    $el.popover('dispose');
                 }
             }, 200);
         }
@@ -97,7 +101,7 @@ $(function () {
             type: 'GET',
             url: $el.data('href'),
             success: function (data) {
-                $el.text(data.count);
+                $el.text(data.count);       //通过不同的user_id拿到元素，然后更新数字
             }
         });
     }

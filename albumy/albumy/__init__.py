@@ -112,9 +112,9 @@ def register_commands(app):
     @app.cli.command()
     @click.option('--user', default=5, help='用户数量，默认10')
     @click.option('--tag', default=10, help=('标签数量, 默认10'))
-    @click.option('--photo', default=30, help='照片数量，默认30')
-    @click.option('--comment', default=100, help='评论数量，默认100')
-    @click.option('--collect', default=30, help='收藏数量，默认50')
+    @click.option('--photo', default=100, help='照片数量，默认30')
+    @click.option('--comment', default=500, help='评论数量，默认100')
+    @click.option('--collect', default=50, help='收藏数量，默认50')
     @click.option('--follow', default=30, help='关注数量，默认30')
     def forge(user,tag, photo, comment,collect,follow):
         from albumy.fakes import fake_admin, fake_user,fake_photo,fake_comment, fake_collect, fake_tag, fake_follow

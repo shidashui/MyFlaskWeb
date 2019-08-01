@@ -73,3 +73,4 @@ def show_following(username):
     pagination = user.following.paginate(page, per_page)
     follows = pagination.items
     return render_template('user/following.html', pagination=pagination,user=user,follows=follows)
+
