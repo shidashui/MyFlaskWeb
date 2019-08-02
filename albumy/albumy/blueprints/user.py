@@ -1,14 +1,19 @@
 from flask import Blueprint, render_template, request, current_app, flash, redirect, url_for
-from flask_login import login_required, current_user
+from flask_login import login_required, current_user, fresh_login_required
 
+from albumy.emails import send_confirm_email
+from albumy.extentions import db,avatars
 from albumy.decorators import confirm_required, permission_required
+from albumy.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarForm, ChangePasswordForm, ChangeEmailForm, \
+    NotificationSettingForm
 from albumy.models import User, Photo, Collect
 from albumy.notifications import push_follow_notification
-from albumy.utils import redirect_back
+from albumy.settings import Operations
+from albumy.utils import redirect_back, flash_errors, generate_token, validate_token
 
 user_bp = Blueprint('user',__name__)
 
-
+#个人主页
 @user_bp.route('/<username>')
 def index(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -43,7 +48,8 @@ def follow(username):
         return redirect(url_for('.index', usernam=username))
 
     current_user.follow(user)
-    push_follow_notification(follower=current_user,receiver=user)
+    if user.receive_follow_notification:
+        push_follow_notification(follower=current_user,receiver=user)
     flash('已关注', 'success')
     return redirect_back()
 
@@ -76,3 +82,123 @@ def show_following(username):
     follows = pagination.items
     return render_template('user/following.html', pagination=pagination,user=user,follows=follows)
 
+
+#设置
+@user_bp.route('/settings/profile', methods=['GET','POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        current_user.name = form.name.data
+        current_user.username = form.username.data
+        current_user.bio = form.bio.data
+        current_user.website = form.website.data
+        current_user.location = form.location.data
+        db.session.commit()
+        flash('已更新个人资料', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    form.name.data = current_user.name
+    form.username.data = current_user.username
+    form.bio.data = current_user.bio
+    form.website.data = current_user.website
+    form.location.data = current_user.location
+    return render_template('user/settings/edit_profile.html', form=form)
+
+#修改头像
+@user_bp.route('/settings/avatar')
+@login_required
+@confirm_required
+def change_avatar():
+    upload_form = UploadAvatarForm()
+    crop_form = CropAvatarForm()
+    return render_template('user/settings/change_avatar.html', upload_form=upload_form,crop_form=crop_form)
+
+@user_bp.route('/settings/avatar/upload', methods=['POST'])
+@login_required
+@confirm_required
+def upload_avatar():
+    form = UploadAvatarForm()
+    if form.validate_on_submit():
+        image = form.image.data
+        filename = avatars.save_avatar(image)
+        current_user.avatar_raw = filename
+        db.session.commit()
+        flash('图像已上传，请裁剪', 'success')
+    flash_errors(form)
+    return redirect(url_for('.change_avatar'))
+
+@user_bp.route('/settings/avatar/crop', methods=['POST'])
+@login_required
+@confirm_required
+def crop_avatar():
+    form = CropAvatarForm()
+    if form.validate_on_submit():
+        x = form.x.data
+        y = form.y.data
+        w = form.w.data
+        h = form.h.data
+        filenames = avatars.crop_avatar(current_user.avatar_raw, x,y,w,h)
+        current_user.avatar_s = filenames[0]
+        current_user.avatar_m = filenames[1]
+        current_user.avatar_l = filenames[2]
+        db.session.commit()
+        flash('已裁剪', 'success')
+    flash_errors(form)
+    return redirect(url_for('.change_avatar'))
+
+
+#密码
+@user_bp.route('/settings/change-password', methods=['GET', 'POST'])
+@fresh_login_required
+def change_password():
+    form = ChangePasswordForm()
+    if form.validate_on_submit():
+        if current_user.validate_password(form.old_password.data):
+            current_user.set_password(form.password.data)
+            db.session.commit()
+            flash('密码已修改', 'success')
+            return redirect(url_for('.index',username=current_user.username))
+        else:
+            flash('旧密码输入有误')
+    return render_template('user/settings/change_password.html', form=form)
+
+
+#邮箱
+@user_bp.route('/settings/change-email', methods=['GET', 'POST'])
+@fresh_login_required
+def change_email_request():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        token = generate_token(user=current_user, operation=Operations.CHANGE_EMAIL, new_email=form.email.data.lower())
+        send_confirm_email(to=form.email.data, user=current_user, token=token)
+        flash('已发送验证邮件', 'info')
+        return redirect(url_for('.index', username=current_user.username))
+    return render_template('user/settings/change_email.html', form=form)
+
+@user_bp.route('/change-email/<token>')
+@login_required
+def change_email(token):
+    if validate_token(user=current_user, token=token, operation=Operations.CHANGE_EMAIL):
+        flash('已更换邮箱', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    else:
+        flash('token无效或过期', 'warning')
+        return redirect(url_for('.change_email_request'))
+
+
+#消息开关
+@user_bp.route('/settings/notification', methods=['GET', 'POST'])
+@login_required
+def notification_setting():
+    form = NotificationSettingForm()
+    if form.validate_on_submit():
+        current_user.receive_collect_notification = form.receive_collect_notification.data
+        current_user.receive_comment_notification = form.receive_comment_notification.data
+        current_user.receive_follow_notification = form.receive_follow_notification.data
+        db.session.commit()
+        flash('已更新消息设置', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    form.receive_collect_notification.data = current_user.receive_collect_notification
+    form.receive_comment_notification.data = current_user.receive_comment_notification
+    form.receive_follow_notification.data = current_user.receive_follow_notification
+    return render_template('user/settings/edit_notification.html', form=form)

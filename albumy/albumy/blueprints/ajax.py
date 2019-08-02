@@ -48,7 +48,8 @@ def follow(username):
         return jsonify(message='已经关注'), 400
 
     current_user.follow(user)
-    push_follow_notification(follower=current_user, receiver=user)
+    if current_user.receive_follow_notification:
+        push_follow_notification(follower=current_user, receiver=user)
     return jsonify(message='已关注')
 
 

@@ -16,6 +16,7 @@ dropzone = Dropzone()
 csrf = CSRFProtect()
 avatars = Avatars()
 
+
 @login_manager.user_loader
 def load_user(user_id):
     from albumy.models import User
@@ -25,6 +26,11 @@ def load_user(user_id):
 login_manager.login_view = 'auth.login'
 # login_manager.login_message = '请登录'
 login_manager.login_message_category = 'warning'
+
+#对话不新鲜跳转的端点
+login_manager.refresh_view = 'auth.re_authenticate'
+login_manager.needs_refresh_message = u'为了保护你的账户安全，请重新登录。'
+login_manager.needs_refresh_message_category = 'warning'
 
 
 #匿名用户的权限管理

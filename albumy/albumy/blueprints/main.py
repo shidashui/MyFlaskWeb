@@ -222,11 +222,12 @@ def new_comment(photo_id):
         replied_id = request.args.get('reply')
         if replied_id:
             comment.replied = Comment.query.get_or_404(replied_id)
-            push_comment_notification(photo_id=photo.id, receiver=comment.replied.author)
+            if current_user.receive_comment_notification:
+                push_comment_notification(photo_id=photo.id, receiver=comment.replied.author)
         db.session.add(comment)
         db.session.commit()
         flash('已评论', 'success')
-        if current_user != photo.author:
+        if current_user != photo.author and current_user.receive_comment_notification:
             push_comment_notification(photo_id, receiver=photo.author, page=page)
     flash_errors(form)
     return redirect(url_for('.show_photo', photo_id=photo_id,page=page))
@@ -282,7 +283,7 @@ def collect(photo_id):
         return redirect(url_for('.show_photo', photo_id=photo_id))
     current_user.collect(photo)
     flash('已收藏', 'success')
-    if current_user != photo.author:
+    if current_user != photo.author and current_user.receive_collect_notification:
         push_collect_notification(collector=current_user, photo_id=photo_id, receiver=photo.author)
     return redirect(url_for('.show_photo', photo_id=photo_id))
 
