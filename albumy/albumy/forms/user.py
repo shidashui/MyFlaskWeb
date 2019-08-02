@@ -53,3 +53,18 @@ class NotificationSettingForm(FlaskForm):
     receive_follow_notification = BooleanField('新的关注')
     receive_collect_notification = BooleanField('新的收藏')
     submit = SubmitField()
+
+#隐私设置
+class PrivacySettingForm(FlaskForm):
+    public_collections = BooleanField('公开收藏')
+    submit = SubmitField()
+
+
+#注销账号
+class DeleteAccountForm(FlaskForm):
+    username = StringField('用户名', validators=[DataRequired(), Length(1,20)])
+    submit = SubmitField()
+
+    def validate_username(self, field):
+        if field.data != current_user.username:
+            raise ValidationError('用户名错误')

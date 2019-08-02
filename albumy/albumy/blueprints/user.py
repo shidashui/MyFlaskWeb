@@ -5,7 +5,7 @@ from albumy.emails import send_confirm_email
 from albumy.extentions import db,avatars
 from albumy.decorators import confirm_required, permission_required
 from albumy.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarForm, ChangePasswordForm, ChangeEmailForm, \
-    NotificationSettingForm
+    NotificationSettingForm, PrivacySettingForm, DeleteAccountForm
 from albumy.models import User, Photo, Collect
 from albumy.notifications import push_follow_notification
 from albumy.settings import Operations
@@ -202,3 +202,30 @@ def notification_setting():
     form.receive_comment_notification.data = current_user.receive_comment_notification
     form.receive_follow_notification.data = current_user.receive_follow_notification
     return render_template('user/settings/edit_notification.html', form=form)
+
+
+#隐私设置
+@user_bp.route('/settings/privacy', methods=['GET', 'POST'])
+@login_required
+def privacy_setting():
+    form = PrivacySettingForm()
+    if form.validate_on_submit():
+        current_user.public_collections = form.public_collections.data
+        db.session.commit()
+        flash('已修改隐私设置', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    form.public_collections.data = current_user.public_collections
+    return render_template('user/settings/edit_privacy.html', form=form)
+
+
+#注销账号
+@user_bp.route('/settings/account/delete', methods=['GET', 'POST'])
+@fresh_login_required
+def delete_account():
+    form = DeleteAccountForm()
+    if form.validate_on_submit():
+        db.session.delete(current_user._get_current_object())
+        db.session.commit()
+        flash('账号已注销，再见', 'success')
+        return redirect(url_for('main.index'))
+    return render_template('user/settings/delete_account.html', form=form)

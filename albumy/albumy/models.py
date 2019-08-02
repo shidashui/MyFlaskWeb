@@ -49,7 +49,10 @@ class User(db.Model, UserMixin):
     receive_follow_notification = db.Column(db.Boolean, default=True)
     receive_collect_notification = db.Column(db.Boolean, default=True)
 
-    confirmed = db.Column(db.Boolean, default=False)
+    #隐私设置
+    public_collections = db.Column(db.Boolean, default=True)
+
+    confirmed = db.Column(db.Boolean, default=False) #是否邮箱验证
 
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     role = db.relationship('Role', back_populates='users')
@@ -225,14 +228,6 @@ class Comment(db.Model):
     replies = db.relationship('Comment', back_populates='replied', cascade='all')
     replied = db.relationship('Comment', back_populates='replies', remote_side=[id])
 
-#图片删除事件监听函数
-@db.event.listens_for(Photo, 'after_delete', named=True)
-def delete_photos(**kwargs):
-    target = kwargs['target']
-    for filename in [target.filename, target.filename_s, target.filename_m]:
-        path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
-        if os.path.exists(path):
-            os.remove(path)
 
 
 #消息提醒
@@ -244,3 +239,24 @@ class Notification(db.Model):
 
     receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     receiver = db.relationship('User', back_populates='notifications')
+
+
+#图片删除事件监听函数
+@db.event.listens_for(Photo, 'after_delete', named=True)
+def delete_photos(**kwargs):
+    target = kwargs['target']
+    for filename in [target.filename, target.filename_s, target.filename_m]:
+        path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
+        if os.path.exists(path):
+            os.remove(path)
+
+#删除头像的监听函数
+@db.event.listens_for(User, 'after_delete', named=True)
+def delete_avatars(**kwargs):
+    target = kwargs['target']
+    for filename in [target.avatar_s, target.avatar_m, target.avatar_l, target.avatar_raw]:
+        print(filename)
+        if filename:
+            path = os.path.join(current_app.config['AVATARS_SAVE_PATH'], filename)
+            if os.path.exists(path):
+                os.remove(path)

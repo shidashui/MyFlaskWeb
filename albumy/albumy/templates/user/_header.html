@@ -1,9 +1,12 @@
 {% from 'bootstrap/nav.html' import render_nav_item %}
-
+{% from 'macros.html' import follow_area with context %}
 
 <div class="row">
     <div class="col-md-3">
-        <img class="img-fluid rounded" src="{{ url_for('main.get_avatar', filename=user.avatar_l) }}">
+        <a href="{% if current_user == user %}{{ url_for('.change_avatar') }}{% else %}#{% endif %}"
+           title="Change avatar">
+            <img class="img-fluid rounded" src="{{ url_for('main.get_avatar', filename=user.avatar_l) }}">
+        </a>
     </div>
     <div class="col-md-9">
         <h1>{{ user.name }}
@@ -20,9 +23,16 @@
                 <a href="https://www.amap.com/search?query={{ user.location }}" target="_blank">{{ user.location|truncate(30) }}</a>&nbsp;&nbsp;
             {% endif %}
             <span class="oi oi-calendar"></span>
-{#            {{ user.member_since }}#}
             {{ moment(user.member_since).format('LL') }}加入
         </p>
+        <div>
+            <div class="float-right">
+                {{ follow_area(user) }}
+                {% if current_user.is_authenticated and user == current_user %}
+                    <a class="btn btn-outline-primary btn-sm" href="{{ url_for('.edit_profile') }}">修改资料</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 <div class="user-nav">
