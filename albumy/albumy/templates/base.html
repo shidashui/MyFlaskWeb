@@ -31,12 +31,12 @@
                     <div class="navbar-nav mr-auto">
                         {{ render_nav_item('main.index', '首页')}}
                         {{ render_nav_item('main.explore', '探索')}}
-                        <form class="form-inline my-2 my-lg-0">
-                            <input type="text" name="q" class="form-control mr-sm-1" placeholder="图片、标签、用户" required>
-                            <button class="btn btn-light my-2 my-sm-0" type="submit">
-                                <span class="oi oi-magnifying-glass"></span>
-                            </button>
-                        </form>
+{#                        <form class="form-inline my-2 my-lg-0">#}
+{#                            <input type="text" name="q" class="form-control mr-sm-1" placeholder="图片、标签、用户" required>#}
+{#                            <button class="btn btn-light my-2 my-sm-0" type="submit">#}
+{#                                <span class="oi oi-magnifying-glass"></span>#}
+{#                            </button>#}
+{#                        </form>#}
                     </div>
                     <div class="navbar-nav ml-auto">
                         {% if current_user.is_authenticated %}

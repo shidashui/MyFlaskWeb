@@ -1,6 +1,5 @@
 $(function () {
     var default_error_message = '服务器错误，请重试';
-    var csrf_token = "{{ csrf_token() }}";
 
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {

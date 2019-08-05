@@ -142,6 +142,9 @@ class User(db.Model, UserMixin):
     def is_followed_by(self, user):
         return self.followers.filter_by(follower_id=user.id).first() is not None
 
+    def followed_photos(self):
+        return Photo.query.join(Follow, Follow.followed_id == Photo.author_id).filter(Follow.follower_id == self.id)
+
 
 #权限管理(RBAC)
 roles_permissions = db.Table('roles_permissions',

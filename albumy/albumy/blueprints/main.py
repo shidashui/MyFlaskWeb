@@ -2,10 +2,11 @@ import os
 
 from flask import render_template, Blueprint, request, current_app, send_from_directory, flash, redirect, url_for, abort
 from flask_login import login_required, current_user
+from sqlalchemy import func
 
 from albumy.extentions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm
-from albumy.models import Photo, Tag, Comment, Collect, Notification
+from albumy.models import Photo, Tag, Comment, Collect, Notification, Follow
 from albumy.decorators import confirm_required, permission_required
 from albumy.utils import rename_image, resize_image, flash_errors
 from albumy.notifications import push_collect_notification, push_comment_notification
@@ -14,13 +15,28 @@ from albumy.notifications import push_collect_notification, push_comment_notific
 main_bp = Blueprint('main', __name__)
 
 
+#获取正在关注用户的图片显示在首页
+#通过连表查询
+#连表查询性能要优于子查询
 @main_bp.route('/')
 def index():
-    return render_template('main/index.html')
+    if current_user.is_authenticated:
+        page = request.args.get('page', 1, type=int)
+        per_page = current_app.config['ALBUMY_PHOTO_PER_PAGE']
+        pagination = Photo.query.join(Follow, Follow.followed_id == Photo.author_id) \
+                        .filter(Follow.follower_id == current_user.id) \
+                        .order_by(Photo.timestamp.desc()).paginate(page, per_page)
+        photos = pagination.items
+    else:
+        pagination = None
+        photos = None
+    tags=Tag.query.join(Tag.photos).group_by(Tag.id).order_by(func.count(Photo.id).desc()).limit(10)
+    return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect)
 
 @main_bp.route('/explore')
 def explore():
-    return render_template('main/explore.html')
+    photos = Photo.query.order_by(func.random()).limit(12)
+    return render_template('main/explore.html', photos=photos)
 
 
 @main_bp.route('/upload', methods=['GET','POST'])
@@ -345,3 +361,4 @@ def read_notification(notification_id):
     db.session.commit()
     flash('已读', 'success')
     return redirect(url_for('.show_notifications'))
+
