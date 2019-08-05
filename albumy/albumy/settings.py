@@ -61,6 +61,7 @@ class BaseConfig:
     DROPZONE_MAX_FILES = 30                 #单次上传最大数量
     DROPZONE_ENABLE_CSRF = True             #开启csrf保护
 
+    WHOOSHEE_MIN_STRING_LEN = 1             #最小搜索字符，默认为3
 
 
 class DevelopmentConfig(BaseConfig):

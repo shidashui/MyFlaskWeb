@@ -6,9 +6,9 @@ from sqlalchemy import func
 
 from albumy.extentions import db
 from albumy.forms.main import DescriptionForm, TagForm, CommentForm
-from albumy.models import Photo, Tag, Comment, Collect, Notification, Follow
+from albumy.models import Photo, Tag, Comment, Collect, Notification, Follow, User
 from albumy.decorators import confirm_required, permission_required
-from albumy.utils import rename_image, resize_image, flash_errors
+from albumy.utils import rename_image, resize_image, flash_errors, redirect_back
 from albumy.notifications import push_collect_notification, push_comment_notification
 
 
@@ -362,3 +362,23 @@ def read_notification(notification_id):
     flash('已读', 'success')
     return redirect(url_for('.show_notifications'))
 
+
+#全局搜索
+@main_bp.route('/search')
+def search():
+    q = request.args.get('q', '')
+    if q == '':
+        flash('请输入内容','warning')
+        return redirect_back()
+
+    category = request.args.get('category', 'photo')
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_SEARCH_RESULT_PER_PAGE']
+    if category == 'user':
+        pagination = User.query.whooshee_search(q).paginate(page, per_page)
+    elif category == 'tag':
+        pagination = Tag.query.whooshee_search(q).paginate(page, per_page)
+    else:
+        pagination = Photo.query.whooshee_search(q).paginate(page, per_page)
+    results = pagination.items
+    return render_template('main/search.html', q=q, results=results, pagination=pagination, category=category)
