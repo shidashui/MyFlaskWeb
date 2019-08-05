@@ -14,7 +14,7 @@
                 </a>
             </div>
             <a class="btn btn-primary btn-sm text-white" data-toggle="modal" data-target="#share-modal">分享</a>
-            {% if current_user == photo.author %}
+            {% if current_user == photo.author or current_user.can('MODERATE') %}
                 <a class="btn btn-primary btn-sm text-white" data-toggle="modal" data-target="#confirm-delete"
                     data-href="{{ url_for('.delete_photo', photo_id=photo.id) }}">删除</a>
             {% endif %}

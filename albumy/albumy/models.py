@@ -55,6 +55,9 @@ class User(db.Model, UserMixin):
 
     confirmed = db.Column(db.Boolean, default=False) #是否邮箱验证
 
+    locked = db.Column(db.Boolean, default=False)   #用户锁定
+    active = db.Column(db.Boolean, default=True)    #封禁用户
+
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
     role = db.relationship('Role', back_populates='users')
     photos = db.relationship('Photo', back_populates='author', cascade='all') #级联设为all，用户被删除，相应图片全删除
@@ -146,6 +149,29 @@ class User(db.Model, UserMixin):
     def followed_photos(self):
         return Photo.query.join(Follow, Follow.followed_id == Photo.author_id).filter(Follow.follower_id == self.id)
 
+    #用户锁定
+    def lock(self):
+        self.locked = True
+        self.role = Role.query.filter_by(name='Locked').first()
+        db.session.commit()
+
+    def unlock(self):
+        self.locked = False
+        self.role = Role.query.filter_by(name='User').first()
+        db.session.commit()
+
+    #用户封禁
+    @property
+    def is_active(self):
+        return self.active
+
+    def block(self):
+        self.active = False
+        db.session.commit()
+
+    def unblock(self):
+        self.active = True
+        db.session.commit()
 
 #权限管理(RBAC)
 roles_permissions = db.Table('roles_permissions',

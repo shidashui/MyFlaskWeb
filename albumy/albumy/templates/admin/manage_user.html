@@ -1,0 +1,113 @@
+{% extends 'admin/index.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+
+{% block title %}用户管理{% endblock %}
+
+
+{% block content %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            {{ render_breadcrumb_item('admin.index', '控制台主页') }}
+            {{ render_breadcrumb_item('admin.manage_user', '用户管理') }}
+        </ol>
+    </nav>
+
+    <div class="page-header">
+        <h1>用户
+            <small class="text-muted">{{ pagination.total }}</small>
+        </h1>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link disabled" href="#">筛选</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.args.get('filter', 'all') == 'all' %}active{% endif %}"
+                   href="{{ url_for('admin.manage_user', filter='all') }}">全部用户</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.args.get('filter') == 'locked' %}active{% endif %}"
+                   href="{{ url_for('admin.manage_user', filter='locked') }}">锁定用户</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.args.get('filter') == 'blocked' %}active{% endif %}"
+                   href="{{ url_for('admin.manage_user', filter='blocked') }}">封禁用户</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.args.get('filter') == 'administrator' %}active{% endif %}"
+                   href="{{ url_for('admin.manage_user', filter='administrator') }}">管理员</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {% if request.args.get('filter') == 'moderator' %}active{% endif %}"
+                   href="{{ url_for('admin.manage_user', filter='moderator') }}">运维人员</a>
+            </li>
+        </ul>
+    </div>
+
+    {% if users %}
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>头像</th>
+                <th>名称/用户名</th>
+                <th>角色</th>
+                <th>简介</th>
+                <th>居住地</th>
+                <th>创建日期</th>
+                <th>图片</th>
+                <th>行为</th>
+            </tr>
+            </thead>
+            {% for user in users %}
+                <tr>
+                    <td><img src="{{ url_for('main.get_avatar', filename=user.avatar_s) }}"> </td>
+                    <td>{{ user.name }}<br>{{ user.username }}</td>
+                    <td>{{ user.role.name }}</td>
+                    <td>{{ user.bio }}</td>
+                    <td>{{ user.location }}</td>
+                    <td>{{ moment(user.member_since).format('LL') }}</td>
+                    <td>
+                        <a href="{{ url_for('user.index', username=user.username) }}">{{ user.photos|length }}</a>
+                    </td>
+                    <td>
+                        {% if user.locked %}
+                            <form class="inline" action="{{ url_for('admin.unlock_user', user_id=user.id) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit" onclick="return confirm('确定这样做？');"
+                                       class="btn btn-secondary btn-sm" value="解锁">
+                            </form>
+                        {% else %}
+                            <form class="inline" action="{{ url_for('admin.lock_user', user_id=user.id) }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit" onclick="return confirm('确定这样做？');"
+                                        class="btn btn-warning btn-sm" value="锁定">
+                            </form>
+                        {% endif %}
+                        {% if user.active %}
+                            <form class="inline" action="{{ url_for('admin.block_user', user_id=user.id) }}"
+                                  method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit" onclick="return confirm('Are you sure?');"
+                                       class="btn btn-warning btn-sm" value="封禁">
+                            </form>
+                        {% else %}
+                            <form class="inline" action="{{ url_for('admin.unblock_user', user_id=user.id) }}"
+                                  method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit" onclick="return confirm('Are you sure?');"
+                                       class="btn btn-secondary btn-sm" value="解封">
+                            </form>
+                        {% endif %}
+                        <a class="btn btn-light btn-sm" href="mailto:{{ user.email }}">邮箱</a>
+                        {% if current_user.is_admin %}
+                            <a class="btn btn-warning btn-sm"
+                               href="{{ url_for('admin.edit_profile_admin', user_id=user.id) }}">编辑资料</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+        <div class="page-footer">{{ render_pagination(pagination) }}</div>
+    {% else %}
+        <div class="tip"><h5>没有用户</h5></div>
+    {% endif %}
+{% endblock %}

@@ -26,6 +26,39 @@
             {{ moment(user.member_since).format('LL') }}加入
         </p>
         <div>
+            {% if current_user != user %}
+                {% if current_user.can('MODERATE') %}
+                    {% if user.locked %}
+                        <form class="inline" action="{{ url_for('admin.unlock_user', user_id=user.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="submit" class="btn btn-secondary btn-sm" value="解锁">
+                        </form>
+                    {% else %}
+                        <form class="inline" action="{{ url_for('admin.lock_user', user_id=user.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="submit" class="btn btn-warning btn-sm" value="锁定">
+                        </form>
+                    {% endif %}
+                    {% if user.active %}
+                        <form class="inline" action="{{ url_for('admin.block_user', user_id=user.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="submit" class="btn btn-warning btn-sm" value="封禁">
+                        </form>
+                    {% else %}
+                        <form class="inline" action="{{ url_for('admin.unblock_user', user_id=user.id) }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="submit" class="btn btn-secondary btn-sm" value="解封">
+                        </form>
+                    {% endif %}
+                    <a class="btn btn-light btn-sm" href="mailto:{{ user.email }}">邮箱</a>
+                {% endif %}
+
+                {% if current_user.is_admin %}
+                    <a class="btn btn-warning btn-sm" href="{{ url_for('admin.edit_profile_admin', user_id=user.id) }}">
+                        编辑资料</a>
+                {% endif %}
+            {% endif %}
+
             <div class="float-right">
                 {{ follow_area(user) }}
                 {% if current_user.is_authenticated and user == current_user %}

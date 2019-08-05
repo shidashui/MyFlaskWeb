@@ -20,9 +20,14 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user is not None and user.validate_password(form.password.data):
-            login_user(user,form.remember_me.data)
-            flash('登陆成功', 'info')
-            return redirect_back()
+            # login_user(user,form.remember_me.data)
+            # 如果用户对象的is_active属性为False，Flask-Login将拒绝登录用户
+            if login_user(user, form.remember_me.data):
+                flash('登陆成功', 'info')
+                return redirect_back()
+            else:
+                flash('你的账号已被封禁', 'warning')
+                return redirect(url_for('main.index'))
         flash('邮箱或密码错误', 'warning')
     return render_template('auth/login.html', form=form)
 
