@@ -128,3 +128,61 @@ def manage_user():
     pagination = filtered_users.order_by(User.member_since.desc()).paginate(page, per_page)
     users = pagination.items
     return render_template('admin/manage_user.html', pagination=pagination, users=users)
+
+
+#图片管理
+@admin_bp.route('/manage/photo', defaults={'order': 'by_flag'})
+@admin_bp.route('/manage/photo/<order>')
+@login_required
+@permission_required('MODERATE')
+def manage_photo(order):
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_MANAGE_PHOTO_PER_PAGE']
+    order_rule = 'flag'
+    if order == 'by_time':
+        pagination = Photo.query.order_by(Photo.timestamp.desc()).paginate(page, per_page)
+        order_rule = 'time'
+    else:
+        pagination = Photo.query.order_by(Photo.flag.desc()).paginate(page, per_page)
+    photos = pagination.items
+    return render_template('admin/manage_photo.html', pagination=pagination, photos=photos, order_rule=order_rule)
+
+
+#评论管理
+@admin_bp.route('/manage/comment', defaults={'order': 'by_flag'})
+@admin_bp.route('/manage/comment/<order>')
+@login_required
+@permission_required('MODERATE')
+def manage_comment(order):
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_MANAGE_COMMENT_PER_PAGE']
+    order_rule = 'flag'
+    if order == 'by_time':
+        pagination = Comment.query.order_by(Comment.timestamp.desc()).paginate(page, per_page)
+        order_rule = 'time'
+    else:
+        pagination = Comment.query.order_by(Comment.flag.desc()).paginate(page, per_page)
+    comments = pagination.items
+    return render_template('admin/manage_comment.html', pagination=pagination, comments=comments, order_rule=order_rule)
+
+
+#标签管理
+@admin_bp.route('/manage/tag')
+@login_required
+@permission_required('MODERATE')
+def manage_tag():
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_MANAGE_TAG_PER_PAGE']
+    pagination = Tag.query.order_by(Tag.id.desc()).paginate(page,per_page)
+    tags = pagination.items
+    return render_template('admin/manage_tag.html', pagination=pagination, tags=tags)
+
+@admin_bp.route('/delete/tag/<int:tag_id>', methods=['GET', 'POST'])
+@login_required
+@permission_required('MODERATE')
+def delete_tag(tag_id):
+    tag = Tag.query.get_or_404(tag_id)
+    db.session.delete(tag)
+    db.session.commit()
+    flash('已删除标签', 'info')
+    return  redirect_back()

@@ -21,6 +21,7 @@ def index(username):
         flash('你的账号已被锁定', 'danger')
 
     if user == current_user and not user.active:
+        #可以加到所有请求上
         logout_user()
 
     page = request.args.get('page', 1, type=int)

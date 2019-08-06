@@ -24,10 +24,10 @@
                            aria-expanded="false">管理<span class="caret"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <a class="dropdown-item" href="#">图片</a>
-                            <a class="dropdown-item" href="#">用户</a>
-                            <a class="dropdown-item" href="#">标签</a>
-                            <a class="dropdown-item" href="#">评论</a>
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_photo') }}">图片</a>
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_user') }}">用户</a>
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_comment') }}">评论</a>
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_tag') }}">标签</a>
                         </div>
                     </div>
 
@@ -69,7 +69,7 @@
                 <div class="card-body">
                     <h4 class="card-title">总数：{{ photo_count|default('0') }}</h4>
                     <p class="card-text">被举报数：{{ reported_photo_count|default('0') }}</p>
-                    <a class="btn btn-primary text-white" href="#">管理</a>
+                    <a class="btn btn-primary text-white" href="{{ url_for('admin.manage_photo') }}">管理</a>
                 </div>
             </div>
         </div>
@@ -80,9 +80,9 @@
                     <h4 class="card-title">总数：{{ user_count|default('0') }}</h4>
                     <p class="card-text">锁定用户人数：{{ locked_user_count|default('0') }}
                                          封禁用户人数：{{ blocked_user_count|default('0') }}</p>
-                    <a class="btn btn-primary text-white" href="#">管理</a>
-                    <a class="btn btn-secondary text-white" href="#">查看锁定用户</a>
-                    <a class="btn btn-secondary text-white" href="#">查看封禁用户</a>
+                    <a class="btn btn-primary text-white" href="{{ url_for('admin.manage_user') }}">管理</a>
+                    <a class="btn btn-secondary text-white" href="{{ url_for('admin.manage_user', filter='locked') }}">查看锁定用户</a>
+                    <a class="btn btn-secondary text-white" href="{{ url_for('admin.manage_user', filter='blocked') }}">查看封禁用户</a>
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@
                 <div class="card-body">
                     <h4 class="card-title">总评论数：{{ comment_count|default('0') }}</h4>
                     <p class="card-text">被举报评论：{{ reported_comments_count|default('0') }} 条</p>
-                    <a class="btn btn-primary text-white" href="#">管理</a>
+                    <a class="btn btn-primary text-white" href="{{ url_for('admin.manage_comment') }}">管理</a>
                 </div>
             </div>
         </div>
@@ -105,7 +105,7 @@
                 <div class="card-body">
                     <h4 class="card-title">总标签数：{{ tag_count|default('0') }}</h4>
                     <p class="card-text">&nbsp;</p>
-                    <a class="btn btn-primary text-white" href="#">管理</a>
+                    <a class="btn btn-primary text-white" href="{{ url_for('admin.manage_tag') }}">管理</a>
                 </div>
             </div>
         </div>

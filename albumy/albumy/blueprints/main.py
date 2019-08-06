@@ -143,7 +143,7 @@ def report_photo(photo_id):
 @login_required
 def edit_description(photo_id):
     photo = Photo.query.get_or_404(photo_id)
-    if current_user != photo.author:
+    if current_user != photo.author and not current_user.can('MODERATE'):
         abort(403)
     form = DescriptionForm()
     if form.validate_on_submit():
@@ -158,7 +158,7 @@ def edit_description(photo_id):
 @login_required
 def new_tag(photo_id):
     photo = Photo.query.get_or_404(photo_id)
-    if current_user != photo.author:
+    if current_user != photo.author and not current_user.can('MODERATE'):
         abort(403)
 
     form = TagForm()
@@ -181,7 +181,7 @@ def new_tag(photo_id):
 def delete_tag(photo_id, tag_id):
     tag = Tag.query.get_or_404(tag_id)
     photo = Photo.query.get_or_404(photo_id)
-    if current_user != photo.author:
+    if current_user != photo.author and not current_user.can('MODERATE'):
         abort(403)
 
     photo.tags.remove(tag)

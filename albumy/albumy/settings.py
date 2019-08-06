@@ -41,6 +41,8 @@ class BaseConfig:
     SECRET_KEY = os.getenv('SECRET_KEY', 'secret string')
     MAX_CONTENT_LENGTH = 3*1024*1024 #文件超3mb返回413
 
+    BOOTSTRAP_SERVE_LOCAL = True #BOOTSTRAP_SERVE_LOCAL = True
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False   #是否追踪对象的修改（占额外内存）
 
     #头像配置
