@@ -1,0 +1,22 @@
+<nav class="green lighten-2" role="navigation">
+    <div class="nav-wrapper container">
+        <a href="#intro" class="brand-logo">Todoism</a>
+        <a data-target="nav-mobile" class="sidenav-trigger button"><i class="material-icons">menu</i> </a>
+        <ul class="right hide-on-med-and-down">
+            {% if current_user.is_authenticated %}
+                <li>
+                    <a class="waves-effect waves-light btn orange" href="#app">{{ current_user.username }}
+                        <span class="badge new" id="active-count-nav">{{ active_items }}</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="waves-effect waves-light" id="logout-btn" data-href="{{ url_for('auth.logout') }}">
+                        <i class="material-icons">power_settings_new</i>
+                    </a>
+                </li>
+            {% else %}
+                <li><a class="waves-effect waves-light btn red" href="#login"></a>Login</li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
