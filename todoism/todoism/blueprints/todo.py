@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify
-from flask_login import login_required, current_user
+from flask import render_template, request, Blueprint, jsonify
+from flask_login import current_user, login_required
 
 from todoism.extensions import db
 from todoism.models import Item
@@ -13,8 +13,8 @@ def app():
     all_count = Item.query.with_parent(current_user).count()
     active_count = Item.query.with_parent(current_user).filter_by(done=False).count()
     completed_count = Item.query.with_parent(current_user).filter_by(done=True).count()
-    return render_template('_app.html', items=current_user.items, all_count=all_count,
-                           active_count=active_count,completed_count=completed_count)
+    return render_template('_app.html', items=current_user.items,
+                           all_count=all_count, active_count=active_count, completed_count=completed_count)
 
 
 @todo_bp.route('/items/new', methods=['POST'])
@@ -26,7 +26,7 @@ def new_item():
     item = Item(body=data['body'], author=current_user._get_current_object())
     db.session.add(item)
     db.session.commit()
-    return jsonify(html=render_template('_item.html', item=item), mesage='+1')
+    return jsonify(html=render_template('_item.html', item=item), message='+1')
 
 
 @todo_bp.route('/item/<int:item_id>/edit', methods=['PUT'])

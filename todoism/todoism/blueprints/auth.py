@@ -52,7 +52,7 @@ def register():
     item2 = Item(body='Help a complete stranger', author=user)
     item3 = Item(body='Drive a motorcycle on the Cteat Wall of China', author=user)
     item4 = Item(body='Sit on the Cteat Egyptian Pyramids', done=True, author=user)
-    db.session.add(item, item2, item3,item4)
+    db.session.add_all([item, item2, item3, item4])
     db.session.commit()
 
     return jsonify(username=username, password=password, message='Generate success.')
