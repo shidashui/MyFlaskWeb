@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 faker = "*"
+httpie = "*"
 
 [packages]
 flask-sqlalchemy = "*"
@@ -26,6 +27,9 @@ sendgrid = "*"
 flask-dropzone = "*"
 flask-avatars = "*"
 flask-whooshee = "*"
+flask-babel = "*"
+flask-cors = "*"
+httpie-dev = "*"
 
 [requires]
 python_version = "3.7"

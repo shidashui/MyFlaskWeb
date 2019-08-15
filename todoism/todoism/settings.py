@@ -13,7 +13,10 @@ else:
 
 
 class BaseConfig:
+    TODOISM_LOCALES = ['en_US', 'zh_Hans_CN']   #存储要支持的区域代码列表
     TODOISM_ITEM_PER_PAGE = 20
+
+    # SERVER_NAME = 'todoism.dev:5000'  # enable subdomain support 设置主机名，支持子域
 
     SECRET_KEY = os.getenv('SECRET_KEY', 'a secret string')
 
