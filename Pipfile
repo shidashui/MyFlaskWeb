@@ -30,6 +30,8 @@ flask-whooshee = "*"
 flask-babel = "*"
 flask-cors = "*"
 httpie-dev = "*"
+flask-socketio = "*"
+eventlet = "*"
 
 [requires]
 python_version = "3.7"

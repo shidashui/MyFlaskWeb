@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>CatChat</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" href="logo.png">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="semantic-ui/semantic.min.css">
+</head>
+<body>
+
+<div class="ui labeled icon right vertical inverted demo menu sidebar">
+    <a class="item" href="http://helloflask.com" target="_blank">
+        <i class="home icon"></i>
+        HelloFlask.com
+    </a>
+    <a class="item" href="https://github.com/greyli/catchat" target="_blank">
+        <i class="github icon"></i>
+        GitHub
+    </a>
+
+        <a class="item" href="#">
+            <i class="setting icon"></i>
+            Profile
+        </a>
+        <a class="item" href="#">
+            <i class="power off icon"></i>
+            Sign out</a>
+</div>
+
+    <div class="ui top fixed borderless menu">
+        <a class="item catchat" href="#">
+            <img src="logo.png">
+            <span>CatChat</span>
+        </a>
+        <div class="item">
+            <div class="ui label black basic" title="Online users">
+                <i class="user icon"></i> <span id="user-count">0</span> / {{ user_amount }}
+            </div>
+        </div>
+        <div class="right menu hide-on-mobile">
+                <div class="item">
+                    <a class="ui primary button" href="#">
+                        Sign in</a>
+                </div>
+            <a class="item" id="toggle-sidebar">
+                <i class="sidebar icon"></i>
+            </a>
+        </div>
+    </div>
+
+<!-- Mobile message Modal -->
+<div id="mobile-new-message-modal" class="ui modal small">
+    <div class="content">
+        <div class="ui form">
+            <textarea id="mobile-message-textarea" rows="15"></textarea>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui button cancel">Cancel</button>
+        <button class="ui button orange approve" id="send-button">Send</button>
+    </div>
+</div>
+
+
+    <script src="js/jquery.min.js"></script>
+    <script src="semantic-ui/semantic.min.js"></script>
+    <script src="js/forms.js"></script>
+    <script src="js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}个人信息{% endblock %}
+{% block nav %}{% endblock %}
+
+
+{% block content %}
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <div class="ui attached message">
+                <div class="header ui image">
+                    <img sr="{{ url_for('static', filename='logo.png') }}" class="image">
+                    <div class="conten">告诉我们关于你的信息</div>
+                </div>
+            </div>
+            <form class="profile ui form attached left aligned fluid segment" method="post" action="{{ url_for('chat.profile') }}">
+                <div class="field eight wide">
+                    <label>昵称</label>
+                    <input name="nickname" placeholder="Nickname" type="text" value="{{ current_user.nickname }}">
+                </div>
+                <div class="field">
+                    <label>GitHub</label>
+                    <input name="github" placeholder="http://github.com/shidashui（这是我的)" type="text" value="{{ current_user.github or '' }}">
+                </div>
+                <div class="field">
+                    <label>网站</label>
+                    <input name="website" placeholder="例如http://www.baidu.com..." type="text" value="{{ current_user.website or '' }}">
+                </div>
+                <div class="field">
+                    <label>简介</label>
+                    <input name="bio" placeholder="随便说些什么。。。" type="text" value="{{ current_user.bio or '' }}">
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="fields two">
+                    <div class="ui orange submit fluid button">开始聊天</div>
+                </div>
+            </form>
+            {% for error_message in get_flashed_messages() %}
+                <div class="ui message floating warning closeable">
+                    <i class="close icon"></i>
+                    <div>{{ error_message }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

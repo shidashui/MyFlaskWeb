@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block page_title %}注册{% endblock %}
+{% block nav %}{% endblock %}
+
+
+{% block content %}
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <div class="ui attached message">
+                <div class="header ui image">
+                    <img src="{{ url_for('static', filename='logo.png') }}" class="image">
+                    <div class="content">
+                        欢迎来到<span class="catchat-text">CatChat</span>!
+                    </div>
+                </div>
+            </div>
+            <form class="register ui form attached left aligned fluid segment" method="post" action="{{ url_for('auth.register') }}">
+                <div class="field eight wide">
+                    <label>昵称</label>
+                    <input name="nickname" placeholder="" type="text">
+                </div>
+                <div class="field">
+                    <label>邮箱</label>
+                    <input name="email" placeholder="" type="text">
+                </div>
+                <div class="field">
+                    <label>密码</label>
+                    <input name="password" placeholder="" type="password">
+                </div>
+                <div class="field">
+                    <label>确认密码</label>
+                    <input name="password2" placeholder="" type="password">
+                </div>
+                <div class="field">
+                    <div class="ui checkbox checked">
+                        <input tabindex="0" class="hidden" type="checkbox" checked="">
+                        <label>我同意条款</label>
+                    </div>
+                </div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="ui orange submit button fluid">加入</div>
+                <div class="ui error message"></div>
+            </form>
+            {% if error %}
+                <div class="ui message floating warning closeable">
+                    <i class="close icon"></i>
+                    <div>{{ error }}</div>
+                </div>
+            {% endif %}
+            <div class="ui bottom attached warning message">
+                <i class="icon help"></i>
+                已经注册？ <a href="{{ url_for('auth.login') }}">登陆</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
