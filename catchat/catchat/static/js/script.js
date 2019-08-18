@@ -1,4 +1,6 @@
 $(document).ready(function () {
+    // var socket = io.connect();
+    var ENTER_KEY = 13;
     var popupLoading = '<i class="notched circle loading icon green"></i> Loading...';
 
     $.ajaxSetup({
@@ -48,6 +50,49 @@ $(document).ready(function () {
             }
         });
     }
+
+    function new_message(e) {
+        var $textarea = $('#message-textarea');
+        var message_body = $textarea.val().trim();
+        if (e.which === ENTER_KEY && !e.shiftKey && message_body) {
+            e.preventDefault();       //阻止默认行为，即换行
+            socket.emit('new message', message_body);
+            $textarea.val('')
+        }
+    }
+    $('#message-textarea').on('keydown', new_message.bind(this));
+
+
+    socket.on('new message', function(data) {
+        console.log(data.message_html)
+        $('.messages').append(data.message_html);  // 插入新消息到页面
+        flask_moment_render_all();  // 渲染消息中的时间戳
+        scrollToBottom();  // 进度条滚动到底部
+        activateSemantics();  // 激活Senmatic-ui组件
+    });
+
+    socket.on('user count', function (data) {
+        $('#user-count').html(data.count)
+    });
+
+
+    //输入模态框
+    $("#message-textarea").focus(function () {
+        if (screen.width < 600) {
+            $('#mobile-new-message-modal').modal('show');
+            $('#mobile-message-textarea').focus()
+        }
+    });
+
+    $('#send-button').on('click', function () {
+        var $mobile_textarea = $('#mobile-message-textarea');
+        var message = $mobile_textarea.val();
+        if (message.trim() !== ''){
+            socket.emit('new message', message);
+            $mobile_textarea.val('')
+        }
+    });
+
 
     function init() {
         activateSemantics();

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block page_title %}匿名空间{% endblock %}
+
+
+{% block nav %}
+    <div class="ui top fixed borderless menu">
+        <a class="item catchat" href="{{ url_for('chat.home') }}" title="Go Back">
+            <img src="{{ url_for('static', filename='logo.png') }}">
+            <span>CatChat(匿名模式)</span>
+        </a>
+        <div class="right menu hide-on-mobile">
+            {% if not current_user.is_authenticated %}
+                <div class="item">
+                    <a class="ui primary button" href="{{ url_for('auth.login') }}">登陆</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="pusher">
+        <div class="chat-box">
+            <div class="messages"></div>
+        </div>
+        <div class="input-area">
+            <div class="ui grid form">
+                <div class="ten wide column">
+                    <div class="field fluid message-box">
+                        {% if current_user.is_authenticated %}
+                            <img class="input-avatar" src="https://www.gravatar.com/avatar?d=mm">
+                            <textarea rows="2" id="message-textarea"
+                                      placeholder="填写内容。。。回车输入"></textarea>
+                        {% else %}
+                            <div class="ui floating message">请<a href="{{ url_for('auth.login') }}">登陆</a>
+                                或<a href="{{ url_for('auth.register') }}">注册</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="four wide column right floated right aligned hide-on-mobile">
+                    <p>Written by <a href="http://greyli.com">Grey Li</a><br>
+                        Fork me on <a href="https://github.com/greyli/catchat">Github</a><br>
+                        2017 © <a href="https://helloflask.com">helloflask.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        var socket = io('/anonymous');
+    </script>
+{% endblock %}

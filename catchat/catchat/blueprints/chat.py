@@ -1,12 +1,16 @@
 from flask import Blueprint, render_template, redirect, url_for
 from flask_login import login_required, current_user
+from flask_socketio import emit
 
-from catchat.extensions import db
+from catchat.extensions import db, socketio
 from catchat.forms import ProfileForm
 from catchat.models import Message, User
 from catchat.utils import flash_errors
 
 chat_bp = Blueprint('chat', __name__)
+
+
+online_users = []  #存储在线用户id
 
 
 @chat_bp.route('/')
@@ -35,3 +39,45 @@ def profile():
 def get_profile(user_id):
     user = User.query.get_or_404(user_id)
     return render_template('chat/_profile_card.html', user=user)
+
+
+@chat_bp.route('/anonymous')
+def anonymous():
+    return render_template('chat/anonymous.html')
+
+
+@socketio.on('new message')
+def new_message(message_body):
+    print(message_body)
+    print(online_users)
+    message = Message(author=current_user._get_current_object(), body=message_body)
+    db.session.add(message)
+    db.session.commit()
+    emit('new message',
+         {'message_html': render_template('chat/_message.html', message=message)}, broadcast=True)
+
+
+@socketio.on('new message', namespace='/anonymous')
+def new_anonymous_message(message_body):
+    avatar = 'https//www.gravatar.com/avatar?d=mm'
+    nickname = '匿名用户'
+    emit('new message',
+         {'message_html': render_template('chat/_anonymous_message.html',message=message_body,avata=avatar,nickname=nickname)},
+         broadcast=True, namespace='/anonymous')
+
+
+#在线人数统计，通过connect和disconect事件
+@socketio.on('connect')
+def connect():
+    global online_users
+    print(online_users)
+    if current_user.is_authenticated and current_user.id not in online_users:
+        online_users.append(current_user.id)
+    emit('user count', {'count': len(online_users)}, broadcast=True)
+
+@socketio.on('disconnect')
+def disconnect():
+    global online_users
+    if current_user.is_authenticated and current_user.id in online_users:
+        online_users.remove(current_user.id)
+    emit('user count', {'count': len(online_users)}, broadcast=True)

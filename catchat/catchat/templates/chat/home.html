@@ -37,3 +37,10 @@
     </div>
 
 {% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script type="text/javascript">
+        var socket = io('/')
+    </script>
+{% endblock %}
