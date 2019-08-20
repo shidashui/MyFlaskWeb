@@ -29,8 +29,8 @@ flask-avatars = "*"
 flask-whooshee = "*"
 flask-babel = "*"
 flask-cors = "*"
-httpie-dev = "*"
 flask-socketio = "*"
+flask-oauthlib = "*"
 
 [requires]
 python_version = "3.7"

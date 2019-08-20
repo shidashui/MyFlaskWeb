@@ -1,5 +1,6 @@
 from flask_login import LoginManager
 from flask_moment import Moment
+from flask_oauthlib.client import OAuth
 from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import CSRFProtect
@@ -9,6 +10,8 @@ login_manager = LoginManager()
 csrf = CSRFProtect()
 moment = Moment()
 socketio = SocketIO()
+oauth = OAuth()
+
 
 @login_manager.user_loader
 def load_user(user_id):

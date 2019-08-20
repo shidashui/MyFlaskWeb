@@ -22,9 +22,13 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        if user is not None and user.verify_password(password):
-            login_user(user, remember_me)
-            return redirect(url_for('chat.home'))
+        if user is not None :
+            if user.password_hash is None:
+                flash('请使用第三方服务登陆')
+                return redirect(url_for('.login'))
+            if user.verify_password(password):
+                login_user(user, remember_me)
+                return redirect(url_for('chat.home'))
         flash('邮箱或密码不正确')
         return redirect(url_for('.login'))
     return render_template('auth/login.html')

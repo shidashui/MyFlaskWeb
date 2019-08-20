@@ -46,6 +46,18 @@
                     <div>{{ error_message }}</div>
                 </div>
             {% endfor %}
+            <div class="ui horizontal divider">或者使用第三方登陆</div>
+            <div class="ui message">
+                <a class="icon" href="{{ url_for('oauth.oauth_login', provider_name='github') }}">
+                    <i class="github big icon black"></i>
+                </a>
+                <a class="icon" href="{{ url_for('oauth.oauth_login', provider_name='google') }}">
+                    <i class="google big icon red"></i>
+                </a>
+                <a class="icon" href="{{ url_for('oauth.oauth_login', provider_name='twitter') }}">
+                    <i class="twitter big icon blue"></i>
+                </a>
+            </div>
         </div>
     </div>
 {% endblock %}
