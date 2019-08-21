@@ -94,6 +94,36 @@ $(document).ready(function () {
     });
 
 
+    var page = 1;
+    function load_messages() {
+        var $messages = $('.messages');
+        var position = $messages.scrollTop();
+        if (position === 0 && socket.nsp !== '/anonymous') {
+            page++;
+            $('.ui.loader').toggleClass('active');
+            $.ajax({
+                url:messages_url,
+                type:'GET',
+                data:{page:page},
+                success:function (data) {
+                    var before_height = $messages[0].scrollHeight;
+                    $(data).prependTo(".messages").hide().fadeIn(800); //插入消息
+                    var after_height = $messages[0].scrollHeight;
+                    flask_moment_render_all();      //渲染时间
+                    $messages.scrollTop(after_height - before_height);
+                    $('.ui.loader').toggleClass('active');
+                    activateSemantics();
+                },
+                error: function () {
+                    alert('已经到头了，没有更多了');
+                    $('.ui.loader').toggleClass('active');
+                }
+            })
+        }
+    }
+
+    $('.messages').scroll(load_messages);
+
     function init() {
         activateSemantics();
         scrollToBottom();

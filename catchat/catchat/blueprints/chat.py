@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for
+from flask import Blueprint, render_template, redirect, url_for, request, current_app
 from flask_login import login_required, current_user
 from flask_socketio import emit
 
@@ -15,7 +15,8 @@ online_users = []  #存储在线用户id
 
 @chat_bp.route('/')
 def home():
-    messages = Message.query.order_by(Message.timestamp.asc())
+    amount = current_app.config['CATCHAT_MESSAGE_PER_PAGE']
+    messages = Message.query.order_by(Message.timestamp.asc())[-amount:]
     user_amount = User.query.count()
     return render_template('chat/home.html', messages=messages, user_amount=user_amount)
 
@@ -44,6 +45,16 @@ def get_profile(user_id):
 @chat_bp.route('/anonymous')
 def anonymous():
     return render_template('chat/anonymous.html')
+
+
+@chat_bp.route('/messages')
+def get_messages():
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['CATCHAT_MESSAGE_PER_PAGE']
+    pagination = Message.query.order_by(Message.timestamp.desc()).paginate(page,per_page)
+    messages = pagination.items
+    return render_template('chat/_messages.html', messages=messages[::-1])
+
 
 
 @socketio.on('new message')
@@ -81,3 +92,5 @@ def disconnect():
     if current_user.is_authenticated and current_user.id in online_users:
         online_users.remove(current_user.id)
     emit('user count', {'count': len(online_users)}, broadcast=True)
+
+
