@@ -5,7 +5,7 @@ from flask_socketio import emit
 from catchat.extensions import db, socketio
 from catchat.forms import ProfileForm
 from catchat.models import Message, User
-from catchat.utils import flash_errors
+from catchat.utils import flash_errors, to_html
 
 chat_bp = Blueprint('chat', __name__)
 
@@ -61,7 +61,8 @@ def get_messages():
 def new_message(message_body):
     print(message_body)
     print(online_users)
-    message = Message(author=current_user._get_current_object(), body=message_body)
+    html_message = to_html(message_body)
+    message = Message(author=current_user._get_current_object(), body=html_message)
     db.session.add(message)
     db.session.commit()
     emit('new message',
@@ -70,10 +71,11 @@ def new_message(message_body):
 
 @socketio.on('new message', namespace='/anonymous')
 def new_anonymous_message(message_body):
+    html_message = to_html(message_body)
     avatar = 'https//www.gravatar.com/avatar?d=mm'
     nickname = '匿名用户'
     emit('new message',
-         {'message_html': render_template('chat/_anonymous_message.html',message=message_body,avata=avatar,nickname=nickname)},
+         {'message_html': render_template('chat/_anonymous_message.html',message=html_message,avata=avatar,nickname=nickname)},
          broadcast=True, namespace='/anonymous')
 
 

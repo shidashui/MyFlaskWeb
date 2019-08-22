@@ -31,6 +31,8 @@ flask-babel = "*"
 flask-cors = "*"
 flask-socketio = "*"
 flask-oauthlib = "*"
+markdown = "*"
+bleach = "*"
 
 [requires]
 python_version = "3.7"

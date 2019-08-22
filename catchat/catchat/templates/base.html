@@ -29,6 +29,10 @@
             个人资料
         </a>
     {% endif %}
+    <a class="item" id="show-help-modal">
+        <i class="help icon"></i>
+        帮助
+    </a>
     {% if current_user.is_authenticated %}
         <a class="item" href="{{ url_for('auth.logout') }}">
             <i class="power off icon"></i>
@@ -73,6 +77,75 @@
         <button class="ui button orange approve" id="send-button">发送</button>
     </div>
 </div>
+
+<!--help modal-->
+<div class="ui modal small help">
+    <div class="header">Markdown 帮助</div>
+    <div class="content">
+        <section class="modal--default__content" id="modal-body-region">
+            <div>
+                <div class="modal-content">
+                    <table class="ui celled striped table">
+                        <tbody>
+                        <tr>
+                            <td><strong>加粗</strong></td>
+                            <td>**加粗**</td>
+                        </tr>
+                        <tr>
+                            <td><i>斜体</i></td>
+                            <td>*italics*</td>
+                        </tr>
+                        <tr>
+                            <td>标题</td>
+                            <td># H1 ## H2 ### H3</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <li>条例</li>
+                            </td>
+                            <td>* item</td>
+                        </tr>
+                        <tr>
+                            <td>引用</td>
+                            <td>&gt; blockquote</td>
+                        </tr>
+                        <tr>
+                            <td><a href="http://greyli.com" target="_blank">链接</a></td>
+                            <td>[title](http://...)</td>
+                        </tr>
+                        <tr>
+                            <td>图片</td>
+                            <td>![alt](http://...)</td>
+                        </tr>
+                        <tr>
+                            <td><code>代码</code></td>
+                            <td>`code`</td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="codehilite">
+                                    <pre><span></span><span class="k">def</span> <span class="nf">hello</span><span
+                                        class="p">():</span>
+    <span class="k">return</span> <span class="s2">"Hello World"</span></pre>
+                                </div>
+                            </td>
+                            <td style="line-height: 100%">```python <i style="color: rgba(0,0,0,0.5)">(shift+enter for
+                                line
+                                break)</i><br>def hello():<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;return "Hello World"<br>```
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+    <div class="actions">
+        <button class="ui button cancel">关闭</button>
+    </div>
+</div>
+
 
 {% block content %}{% endblock %}
 {% block scripts %}
