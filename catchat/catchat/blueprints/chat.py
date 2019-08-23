@@ -59,8 +59,8 @@ def get_messages():
 
 @socketio.on('new message')
 def new_message(message_body):
-    print(message_body)
-    print(online_users)
+    # print(message_body)
+    # print(online_users)
     html_message = to_html(message_body)
     message = Message(author=current_user._get_current_object(), body=html_message)
     db.session.add(message)
@@ -83,7 +83,7 @@ def new_anonymous_message(message_body):
 @socketio.on('connect')
 def connect():
     global online_users
-    print(online_users)
+    # print(online_users)
     if current_user.is_authenticated and current_user.id not in online_users:
         online_users.append(current_user.id)
     emit('user count', {'count': len(online_users)}, broadcast=True)

@@ -33,6 +33,7 @@ flask-socketio = "*"
 flask-oauthlib = "*"
 markdown = "*"
 bleach = "*"
+pygments = "*"
 
 [requires]
 python_version = "3.7"

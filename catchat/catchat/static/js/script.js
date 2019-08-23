@@ -32,6 +32,10 @@ $(document).ready(function () {
             $('.ui.modal.help').modal({blurring:true}).modal('show');
         });
 
+        $('#show-snippet-modal').on('click', function () {
+            $('.ui.modal.snippet').modal({blurring:true}).modal('show')
+        })
+
         $('.pop-card').popup({
             inline: true,
             on: 'hover',
@@ -94,6 +98,17 @@ $(document).ready(function () {
         if (message.trim() !== ''){
             socket.emit('new message', message);
             $mobile_textarea.val('')
+        }
+    });
+
+
+    //snippet
+    $('#snippet-button').on('click', function () {
+        var $snippet_textarea = $('#snippet-textarea');
+        var message = $snippet_textarea.val();
+        if (message.trim() !== '') {
+            socket.emit('new message', message);
+            $snippet_textarea.val('')
         }
     });
 

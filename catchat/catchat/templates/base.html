@@ -52,7 +52,11 @@
             </div>
         </div>
         <div class="right menu hide-on-mobile">
-            {% if not current_user.is_authenticated %}
+            {% if current_user.is_authenticated %}
+                <div class="item">
+                    <button class="ui button orange basic" id="show-snippet-modal">新建消息</button>
+                </div>
+            {% else %}
                 <div class="item">
                     <a class="ui primary button" href="{{ url_for('auth.login') }}">
                         登陆</a>
@@ -75,6 +79,20 @@
     <div class="actions">
         <button class="ui button cancel">取消</button>
         <button class="ui button orange approve" id="send-button">发送</button>
+    </div>
+</div>
+
+<!--snippet modal-->
+<div class="ui modal small snippet">
+    <div class="header">新建消息</div>
+    <div class="content">
+        <div class="ui form">
+            <textarea id="snippet-textarea" rows="20"></textarea>
+        </div>
+    </div>
+    <div class="actions">
+        <button class="ui button cancel">取消</button>
+        <button class="ui button blue approve" id="snippet-button">新建发送</button>
     </div>
 </div>
 
