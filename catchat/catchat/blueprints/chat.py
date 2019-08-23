@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, redirect, url_for, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, current_app, abort
 from flask_login import login_required, current_user
 from flask_socketio import emit
 
@@ -54,6 +54,16 @@ def get_messages():
     pagination = Message.query.order_by(Message.timestamp.desc()).paginate(page,per_page)
     messages = pagination.items
     return render_template('chat/_messages.html', messages=messages[::-1])
+
+
+@chat_bp.route('/message/delete/<message_id>', methods=['DELETE'])
+def delete_message(message_id):
+    message = Message.query.get_or_404(message_id)
+    if current_user != message.author and not current_user.is_admin:
+        abort(403)
+    db.session.delete(message)
+    db.session.commit()
+    return '', 204
 
 
 

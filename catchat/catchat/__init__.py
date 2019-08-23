@@ -4,6 +4,7 @@ import click
 from flask import Flask, render_template
 from flask_wtf.csrf import CSRFError
 
+from catchat.blueprints.admin import admin_bp
 from catchat.blueprints.auth import auth_bp
 from catchat.blueprints.chat import chat_bp
 from catchat.blueprints.oauth import oauth_bp
@@ -40,6 +41,7 @@ def register_blueprints(app):
     app.register_blueprint(auth_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(oauth_bp)
+    app.register_blueprint(admin_bp)
 
 
 

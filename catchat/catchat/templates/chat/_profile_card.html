@@ -4,7 +4,9 @@
             <img src="{{ user.gravatar }}">
         </div>
         <div class="content">
-            <div class="header">{{ user.nickname }}</div>
+            <div class="header">{{ user.nickname }}
+                {% if user.is_admin %}<span class="ui orange circular label">管理员</span>{% endif %}
+            </div>
             <div class="description">{{ user.bio or '他的经历如此神秘。' }}</div>
         </div>
     </div>
@@ -13,5 +15,11 @@
     {% endif %}
     {% if user.website %}
         <i class="linkify icon"></i><a href="{{ user.website }}" target="_blank">网站</a>
+    {% endif %}
+
+    {% if current_user.is_admin and not user.is_admin %}
+        <i class="delete icon"></i>
+        <a class="delete-user-btn" href="#!" data-href="{{ url_for('admin.block_user',user_id=user.id) }}"
+           onclick="confirm('确定删除用户？')">删除</a>
     {% endif %}
 </div>

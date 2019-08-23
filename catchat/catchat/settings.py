@@ -15,6 +15,8 @@ else:
 class BaseConfig:
     SECRET_KEY = os.getenv('SECRET_KEY', 'dev key')
 
+    CATCHAT_ADMIN_EMAIL = os.getenv('CATCHAT_ADMIN_EMAIL', '164635470@qq.com')
+
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', prefix+os.path.join(basedir, 'chatdata.db'))
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

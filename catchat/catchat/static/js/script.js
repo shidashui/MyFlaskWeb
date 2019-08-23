@@ -121,6 +121,44 @@ $(document).ready(function () {
         }
     });
 
+    //quote message
+    $('.quote-button').on('click', function () {
+        var $textarea = $('#message-textarea');
+        var message = $(this).parent().parent().parent().find('.message-body').text();
+        $textarea.val('>' + message + '\n\n');
+        $textarea.val($textarea.val()).focus()
+    });
+
+    //delete message
+    $('.delete-button').on('click', function () {
+        var $this = $(this);
+        $.ajax({
+            type: 'DELETE',
+            url: $this.data('href'),
+            success: function () {
+                $this.parent().parent().parent().remove();
+            },
+            error: function () {
+                alert('Oops, 不知道发生什么错误了。。。')
+            }
+        })
+    });
+
+    //delete user
+    $('.delete-user-btn').on('click', function () {
+        var $this = $(this);
+        $.ajax({
+            type: 'DELETE',
+            url: $this.data('href'),
+            success: function () {
+                alert('成功，他已经消失，嘿嘿嘿')
+            },
+            error: function () {
+                alert('Oops, 不知道发生什么错误了。。。')
+            }
+        })
+    });
+
 
     var page = 1;
     function load_messages() {

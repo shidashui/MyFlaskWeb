@@ -1,10 +1,11 @@
 import hashlib
 from datetime import datetime
 
-from flask_login import UserMixin
+from flask import current_app
+from flask_login import UserMixin, AnonymousUserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from catchat.extensions import db
+from catchat.extensions import db,login_manager
 
 
 class User(UserMixin, db.Model):
@@ -37,6 +38,10 @@ class User(UserMixin, db.Model):
     def gravatar(self):
         return 'https://gravatar.com/avatar/%s?d=monsterid' % self.email_hash
 
+    @property
+    def is_admin(self):
+        return self.email == current_app.config['CATCHAT_ADMIN_EMAIL']
+
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,3 +49,11 @@ class Message(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     author = db.relationship('User', back_populates='messages')
+
+
+class Guest(AnonymousUserMixin):
+    @property
+    def is_admin(self):
+        return False
+
+login_manager.anonymous_user = Guest
