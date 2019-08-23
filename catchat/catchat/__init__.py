@@ -99,6 +99,7 @@ def register_commands(app):
                         github=fake.url(),
                         website=fake.url(),
                         email=fake.email())
+            user.set_password('123456')
             db.session.add(user)
             try:
                 db.session.commit()

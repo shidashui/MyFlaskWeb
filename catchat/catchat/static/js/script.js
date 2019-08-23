@@ -2,6 +2,7 @@ $(document).ready(function () {
     // var socket = io.connect();
     var ENTER_KEY = 13;
     var popupLoading = '<i class="notched circle loading icon green"></i> Loading...';
+    var message_count = 0;
 
     $.ajaxSetup({
         beforeSend: function (xhr, settings) {
@@ -72,7 +73,15 @@ $(document).ready(function () {
 
 
     socket.on('new message', function(data) {
-        console.log(data.message_html)
+        message_count++;
+        if (!document.hasFocus()) {
+            document.title = '(' + message_count + ')' + 'CatChat';
+        }
+        if (data.user_id !== current_user_id) {
+            messageNotify(data);
+        }
+
+        // console.log(data.message_html);
         $('.messages').append(data.message_html);  // 插入新消息到页面
         flask_moment_render_all();  // 渲染消息中的时间戳
         scrollToBottom();  // 进度条滚动到底部
@@ -143,7 +152,44 @@ $(document).ready(function () {
 
     $('.messages').scroll(load_messages);
 
+
+    function messageNotify(data) {
+        if (Notification.permission !== 'granted')
+            Notification.requestPermission();
+        else {
+            var notification = new Notification("消息来自" + data.nickname,{
+                icon: data.gravatar,
+                body: data.message_body.replace(/(<([^>]+)>)/ig, "")
+            });
+
+            notification.onclick = function () {
+                window.open(root_url);
+            };
+            setTimeout(function () {
+                notification.close()
+            }, 4000);
+        }
+    }
+
+
     function init() {
+
+        //桌面通知
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!Notification) {
+                alser('此浏览器不支持桌面通知');
+                return;
+            }
+
+            if (Notification.permission !== 'granted')
+                Notification.requestPermission();
+        });
+
+        $(window).focus(function () {
+            message_count = 0;
+            document.title = 'CatChat';
+        });
+
         activateSemantics();
         scrollToBottom();
     }

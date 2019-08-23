@@ -176,6 +176,8 @@
     <script type="text/javascript">
         var messages_url = "{{ url_for('chat.get_messages') }}";
         var csrf_token = "{{ csrf_token() }}";
+        var root_url = "{{ url_for('chat.home') }}";
+        var current_user_id = {{ current_user.id|default(0) }};
     </script>
 {% endblock %}
 </body>

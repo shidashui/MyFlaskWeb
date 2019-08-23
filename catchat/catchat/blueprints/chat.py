@@ -66,7 +66,12 @@ def new_message(message_body):
     db.session.add(message)
     db.session.commit()
     emit('new message',
-         {'message_html': render_template('chat/_message.html', message=message)}, broadcast=True)
+         {'message_html': render_template('chat/_message.html', message=message),
+          'message_body': html_message,
+          'gravatar': current_user.gravatar,
+          'nickname': current_user.nickname,
+          'user_id': current_user.id},
+         broadcast=True)
 
 
 @socketio.on('new message', namespace='/anonymous')
@@ -75,8 +80,15 @@ def new_anonymous_message(message_body):
     avatar = 'https//www.gravatar.com/avatar?d=mm'
     nickname = '匿名用户'
     emit('new message',
-         {'message_html': render_template('chat/_anonymous_message.html',message=html_message,avata=avatar,nickname=nickname)},
-         broadcast=True, namespace='/anonymous')
+         {'message_html': render_template('chat/_anonymous_message.html',
+                                          message=html_message,
+                                          avatar=avatar,
+                                          nickname=nickname),
+        'message_body': html_message,
+        'gravatar': avatar,
+        'nickname': nickname,
+        'user_id': current_user.id},
+        broadcast = True, namespace = '/anonymous')
 
 
 #在线人数统计，通过connect和disconect事件
