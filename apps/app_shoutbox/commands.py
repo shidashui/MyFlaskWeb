@@ -1,6 +1,6 @@
 import click
-from apps.app_shoutbox import app, db
-from apps.app_shoutbox.models import Message
+from app_shoutbox import app, db
+from app_shoutbox.models import Message
 
 @app.cli.command()
 @click.option('--count', default=20, help='Quantity of messages default is 20.')

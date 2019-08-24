@@ -1,5 +1,5 @@
 import os, sys
-from apps.app_shoutbox import app
+from app_shoutbox import app
 
 # SQLite URI compatible
 WIN = sys.platform.startswith('win')

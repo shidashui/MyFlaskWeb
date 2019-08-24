@@ -19,4 +19,4 @@ toolbar = DebugToolbarExtension(app)
 因为这些模块也需要从构造文件中导入程序实例，
 所以为了避免循环依赖，这些导入语句在构造文件的末尾定义。
 """
-from apps.app_shoutbox import views, commands
+from app_shoutbox import views, commands

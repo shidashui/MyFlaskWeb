@@ -1,8 +1,8 @@
 from flask import flash, redirect, url_for, render_template
 
-from apps.app_shoutbox import app, db
-from apps.app_shoutbox.models import Message
-from apps.app_shoutbox.forms import HelloForm
+from app_shoutbox import app, db
+from app_shoutbox.models import Message
+from app_shoutbox.forms import HelloForm
 
 @app.route('/', methods=['GET', 'POST'])
 def index():

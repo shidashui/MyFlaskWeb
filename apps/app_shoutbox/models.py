@@ -1,5 +1,5 @@
 from datetime import datetime
-from apps.app_shoutbox import db
+from app_shoutbox import db
 
 #可以考虑后期添加用户或者游客以及邮箱的字段，还有可回复的功能
 class Message(db.Model):
