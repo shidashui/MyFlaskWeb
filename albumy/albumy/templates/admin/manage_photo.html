@@ -69,7 +69,7 @@
                     <td>{{ photo.flag }}</td>
                     <td>{{ moment(photo.timestamp).format('LL') }}</td>
                     <td>
-                        <form class="inline" method="post" action="{{ url_for('main.delete_photo', photo_id=photo.id, next=request.full_path) }}">
+                        <form class="inline" method="post" action="{{ url_for('admin.delete_photo', photo_id=photo.id, next=request.full_path) }}">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('确定这样做？');">删除</button>
                         </form>

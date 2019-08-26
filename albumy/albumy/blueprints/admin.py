@@ -147,6 +147,16 @@ def manage_photo(order):
     photos = pagination.items
     return render_template('admin/manage_photo.html', pagination=pagination, photos=photos, order_rule=order_rule)
 
+@admin_bp.route('/delete/photo/<int:photo_id>', methods=['POST'])
+@login_required
+@permission_required('MODERATE')
+def delete_photo(photo_id):
+    photo = Photo.query.get_or_404(photo_id)
+    db.session.delete(photo)
+    db.session.commit()
+    flash('已删除图片', 'info')
+    return redirect_back()
+
 
 #评论管理
 @admin_bp.route('/manage/comment', defaults={'order': 'by_flag'})
@@ -185,4 +195,4 @@ def delete_tag(tag_id):
     db.session.delete(tag)
     db.session.commit()
     flash('已删除标签', 'info')
-    return  redirect_back()
+    return redirect_back()

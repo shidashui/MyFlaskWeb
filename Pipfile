@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 faker = "*"
 httpie = "*"
+coverage = "*"
 
 [packages]
 flask-sqlalchemy = "*"
@@ -34,6 +35,8 @@ flask-oauthlib = "*"
 markdown = "*"
 bleach = "*"
 pygments = "*"
+flake8 = "*"
+flask-caching = "*"
 
 [requires]
 python_version = "3.7"

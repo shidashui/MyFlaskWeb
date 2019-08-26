@@ -1,6 +1,6 @@
 import os
 import logging
-from logging.handlers import SMTPHandler,RotatingFileHandler
+from logging.handlers import SMTPHandler, RotatingFileHandler
 
 import click
 from flask import Flask, render_template, request
@@ -28,17 +28,20 @@ def create_app(config_name=None):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
-    register_logging(app) #注册日志处理器
-    register_extensions(app) #注册扩展（扩展初始化）
-    register_blueprints(app)  #注册蓝图
-    register_commands(app)  #注册自定义shell命令
-    register_errors(app)  #注册错误处理函数
+    register_logging(app)  # 注册日志处理器
+    register_extensions(app)  # 注册扩展（扩展初始化）
+    register_blueprints(app)  # 注册蓝图
+    register_commands(app)  # 注册自定义shell命令
+    register_errors(app)  # 注册错误处理函数
     register_shell_context(app)  # 注册shell上下文处理函数
-    register_template_context(app) #注册模板上下文处理函数
+    register_template_context(app)  # 注册模板上下文处理函数
+    register_request_handlers(app)  # 注册请求处理函数
     return app
+
 
 def register_logging(app):
     pass
+
 
 def register_extensions(app):
     bootstrap.init_app(app)
@@ -50,15 +53,18 @@ def register_extensions(app):
     login_manager.init_app(app)
     csrf.init_app(app)
 
+
 def register_blueprints(app):
     app.register_blueprint(blog_bp)
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
 
+
 def register_shell_context(app):
     @app.shell_context_processor
     def make_shell_context():
         return dict(db=db)
+
 
 def register_template_context(app):
     @app.context_processor
@@ -72,6 +78,7 @@ def register_template_context(app):
             unread_comments = None
         return dict(admin=admin, categories=categories, unread_comments=unread_comments)
 
+
 def register_errors(app):
     @app.errorhandler(400)
     def bad_request(e):
@@ -81,14 +88,14 @@ def register_errors(app):
     def handle_csrf_error(e):
         return render_template('errors/400.html', description=e.description), 400
 
-def register_commands(app):
 
+def register_commands(app):
     @app.cli.command()
     @click.option('--category', default=10, help='分类数量，默认为10')
     @click.option('--post', default=50, help='文章数量，默认为50')
     @click.option('--comment', default=500, help='评论数量，默认500')
     def forge(category, post, comment):
-        from .fakes import fake_admin,fake_categories,fake_posts,fake_comments
+        from .fakes import fake_admin, fake_categories, fake_posts, fake_comments
 
         db.drop_all()
         db.create_all()
@@ -99,10 +106,9 @@ def register_commands(app):
         fake_comments(comment)
         click.echo('完成')
 
-
     @app.cli.command()
     @click.option('--username', prompt=True, help='用于登陆的用户名')
-    @click.option('--password', prompt=True, hide_input=True,confirmation_prompt=True,
+    @click.option('--password', prompt=True, hide_input=True, confirmation_prompt=True,
                   help='用于登陆的密码')
     # @click.password_option('--password') 等价于上一行
     def init(username, password):
@@ -113,7 +119,7 @@ def register_commands(app):
             click.echo('用户存在，更新密码和用户名')
             admin.username = username
             admin.password = password
-            #admin.set_password(password)
+            # admin.set_password(password)
         else:
             click.echo('创建用户')
             admin = Admin(
@@ -135,3 +141,14 @@ def register_commands(app):
         db.session.commit()
         click.echo('完成')
 
+
+def register_request_handlers(app):
+    @app.after_request
+    def query_profiler(response):
+        for q in get_debug_queries():
+            if q.duration >= app.config['BLUELOG_SLOW_QUERY_THRESHOLD']:
+                app.logger.warning(
+                    'Slow query: Duration: %fs\n Context: %s\nQuery: %s\n'
+                    % (q.duration, q.context, q.statement)
+                )
+        return response
